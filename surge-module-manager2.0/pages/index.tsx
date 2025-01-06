@@ -41,6 +41,11 @@ export default function Home() {
     setSelectedGist(null);
   };
 
+  const handleBack = () => {
+    setIsEditing(false);
+    setSelectedGist(null);
+  };
+
   const handleModeSwitch = (newMode: 'local' | 'remote') => {
     if (newMode === 'remote' && !session) {
       const confirmSwitch = window.confirm(t('loginPrompt'));
@@ -50,10 +55,24 @@ export default function Home() {
       }
     }
     setMode(newMode);
+    setSelectedGist(null);
+    setIsEditing(false);
   };
 
+  if (isEditing) {
+    return mode === 'local' ? (
+      <LocalEditor />
+    ) : (
+      <ModuleEditor
+        gistId={selectedGist?.id}
+        initialContent={selectedGist?.files?.['surge-module.sgmodule']?.content}
+        onSave={handleSaveComplete}
+      />
+    );
+  }
+
   return (
-    <>
+    <div>
       <Head>
         <title>{t('title')}</title>
         <meta name="description" content="Manage your Surge modules" />
@@ -61,154 +80,93 @@ export default function Home() {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.40.0/tabler-icons.min.css" />
       </Head>
 
-      <div className="min-h-screen">
-        <nav className="bg-white/90 backdrop-blur-sm shadow fixed top-0 w-full z-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-xl font-bold flex items-center gap-2">
-                  <i className="ti ti-box"></i> 
-                  {t('title')}
-                </h1>
-              </div>
-              <div className="flex items-center gap-4">
-                {mode === 'local' && (
-                  <>
-                    <button
-                      onClick={() => {
-                        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-                        if (fileInput) fileInput.click();
-                      }}
-                      className="px-4 py-2 rounded-md bg-indigo-500 hover:bg-indigo-600 text-white transition-all flex items-center gap-2"
-                    >
-                      <i className="ti ti-upload"></i> {t('importModule')}
-                    </button>
-                    <button
-                      onClick={() => {
-                        const event = new CustomEvent('save-config');
-                        window.dispatchEvent(event);
-                      }}
-                      className="px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white transition-all flex items-center gap-2"
-                    >
-                      <i className="ti ti-device-floppy"></i> {t('saveConfig')}
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={toggleLanguage}
-                  className="px-4 py-2 rounded-md bg-gray-900 hover:bg-gray-800 text-white transition-all flex items-center gap-2"
-                >
-                  <i className="ti ti-language"></i> {language === 'zh' ? 'EN' : '中文'}
-                </button>
-                <div className="grid grid-cols-2 p-0.5 rounded-lg bg-gray-700 relative w-56">
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-[50%] bg-blue-500 rounded-md transition-transform duration-300 ease-in-out ${
-                      mode === 'remote' ? 'translate-x-full' : ''
-                    }`}
-                  ></div>
+      <main className="min-h-screen bg-gray-50">
+        {/* 导航栏 */}
+        <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center space-x-8">
+                <h1 className="text-xl font-semibold text-gray-900">{t('title')}</h1>
+                <div className="flex space-x-4">
                   <button
                     onClick={() => handleModeSwitch('local')}
-                    className="relative z-10 px-3 py-1.5 rounded-md flex items-center justify-center gap-1.5 text-white text-sm"
+                    className={`px-4 py-2 rounded-md ${
+                      mode === 'local'
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
                   >
-                    <i className="ti ti-device-laptop"></i> {t('localMode')}
+                    {t('localMode')}
                   </button>
                   <button
                     onClick={() => handleModeSwitch('remote')}
-                    className="relative z-10 px-3 py-1.5 rounded-md flex items-center justify-center gap-1.5 text-white text-sm"
+                    className={`px-4 py-2 rounded-md ${
+                      mode === 'remote'
+                        ? 'bg-indigo-100 text-indigo-700'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
                   >
-                    <i className="ti ti-cloud"></i> {t('remoteMode')}
+                    {t('remoteMode')}
                   </button>
                 </div>
-                {mode === 'remote' && (
-                  session ? (
-                    <>
-                      <span className="text-sm text-gray-600">
-                        <i className="ti ti-user"></i> {session.user?.name}
-                      </span>
-                      <button
-                        onClick={() => signOut()}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-all"
-                      >
-                        <i className="ti ti-logout"></i> {t('logout')}
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => signIn('github')}
-                      className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition-all"
-                    >
-                      <i className="ti ti-brand-github"></i> {t('login')}
-                    </button>
-                  )
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleLanguage}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-900"
+                >
+                  {language === 'zh' ? 'EN' : '中文'}
+                </button>
+                {session ? (
+                  <button
+                    onClick={() => signOut()}
+                    className="px-4 py-2 text-red-600 hover:text-red-700"
+                  >
+                    {t('logout')}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => signIn('github')}
+                    className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800"
+                  >
+                    {t('login')}
+                  </button>
                 )}
               </div>
             </div>
           </div>
         </nav>
 
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 mt-16">
+        {/* 主要内容区域 */}
+        <div className="container mx-auto px-4 pt-20">
           {mode === 'local' ? (
             <LocalEditor />
           ) : (
-            <div className="bg-white/90 backdrop-blur-sm shadow rounded-lg p-6">
-              {!isEditing ? (
-                <div className="space-y-4">
-                  {!session ? (
-                    <div className="text-center py-8">
-                      <i className="ti ti-lock text-4xl text-gray-400"></i>
-                      <p className="mt-2 text-gray-600">{t('loginRequired')}</p>
-                      <button
-                        onClick={() => signIn('github')}
-                        className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md transition-all"
-                      >
-                        <i className="ti ti-brand-github"></i> {t('login')}
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <button
-                        onClick={handleCreateNew}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition-all flex items-center gap-2"
-                      >
-                        <i className="ti ti-plus"></i> {t('addScript')}
-                      </button>
-                      <div className="mt-4">
-                        <GistSelector
-                          onSelect={handleGistSelect}
-                          onCreateNew={handleCreateNew}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <ModuleEditor
-                  gistId={selectedGist?.id}
-                  initialContent={selectedGist?.files[Object.keys(selectedGist.files)[0]]?.content}
-                  onSave={handleSaveComplete}
-                />
-              )}
-            </div>
+            <GistSelector
+              onSelect={handleGistSelect}
+              onCreateNew={handleCreateNew}
+              selectedGist={selectedGist}
+            />
           )}
-        </main>
+        </div>
+      </main>
 
-        <footer className="fixed bottom-0 left-0 w-full bg-black/50 backdrop-blur-sm text-white text-center py-4">
-          <div className="space-y-1">
-            <div>
-              Powered by <a href="https://github.com/czy13724" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">Levi</a>
-            </div>
-            <div className="text-sm text-gray-400">
-              Copyright &copy; {new Date().getFullYear()} Levi. All rights reserved.
-            </div>
+      <footer className="fixed bottom-0 left-0 w-full bg-black/50 backdrop-blur-sm text-white text-center py-4">
+        <div className="space-y-1">
+          <div>
+            Powered by <a href="https://github.com/czy13724" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">Levi</a>
           </div>
-        </footer>
-      </div>
+          <div className="text-sm text-gray-400">
+            Copyright &copy; {new Date().getFullYear()} Levi. All rights reserved.
+          </div>
+        </div>
+      </footer>
 
       <style jsx global>{`
         body {
           background: url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg') center/cover fixed no-repeat;
         }
       `}</style>
-    </>
+    </div>
   );
 }

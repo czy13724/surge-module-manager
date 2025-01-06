@@ -6,6 +6,9 @@ export const translations = {
     remoteMode: '远程模式',
     login: 'GitHub 登录',
     logout: '登出',
+    back: '返回',
+    preview: '预览',
+    edit: '编辑',
 
     // 预添加脚本区
     addScriptSection: '预添加脚本区',
@@ -66,6 +69,9 @@ export const translations = {
     remoteMode: 'Remote Mode',
     login: 'GitHub Login',
     logout: 'Logout',
+    back: 'Back',
+    preview: 'Preview',
+    edit: 'Edit',
 
     // Add Script Section
     addScriptSection: 'Add Script',
