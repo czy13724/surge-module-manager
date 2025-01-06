@@ -96,18 +96,6 @@ export default function LocalEditor() {
     fileInputRef.current?.click();
   }, []);
 
-  // 添加保存事件监听器
-  useEffect(() => {
-    const handleSaveConfig = () => {
-      saveConfig();
-    };
-
-    window.addEventListener('save-config', handleSaveConfig);
-    return () => {
-      window.removeEventListener('save-config', handleSaveConfig);
-    };
-  }, [saveConfig]);
-
   const generateModuleContent = useCallback(() => {
     const lines = [];
     
@@ -157,6 +145,18 @@ export default function LocalEditor() {
       alert(t('downloadFailed'));
     }
   }, [generateModuleContent, moduleName, t]);
+
+  // 添加保存事件监听器
+  useEffect(() => {
+    const handleSaveConfig = () => {
+      saveConfig();
+    };
+
+    window.addEventListener('save-config', handleSaveConfig);
+    return () => {
+      window.removeEventListener('save-config', handleSaveConfig);
+    };
+  }, [saveConfig]);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50/70 pt-20">
