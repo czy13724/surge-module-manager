@@ -1,7 +1,8 @@
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import ModuleEditor from '../components/ModuleEditor';
+import GistSelector from '../components/GistSelector';
 import dynamic from 'next/dynamic';
 import { useTranslation } from '../hooks/useTranslation';
 
@@ -75,7 +76,6 @@ export default function Home() {
                   <>
                     <button
                       onClick={() => {
-                        // 触发本地编辑器的导入功能
                         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
                         if (fileInput) fileInput.click();
                       }}
@@ -85,7 +85,6 @@ export default function Home() {
                     </button>
                     <button
                       onClick={() => {
-                        // 触发本地编辑器的保存功能
                         const event = new CustomEvent('save-config');
                         window.dispatchEvent(event);
                       }}
@@ -102,13 +101,11 @@ export default function Home() {
                   <i className="ti ti-language"></i> {language === 'zh' ? 'EN' : '中文'}
                 </button>
                 <div className="grid grid-cols-2 p-0.5 rounded-lg bg-gray-700 relative w-56">
-                  {/* 滑动的背景块 */}
                   <div
                     className={`absolute top-0.5 bottom-0.5 w-[50%] bg-blue-500 rounded-md transition-transform duration-300 ease-in-out ${
                       mode === 'remote' ? 'translate-x-full' : ''
                     }`}
                   ></div>
-                  {/* 按钮 */}
                   <button
                     onClick={() => handleModeSwitch('local')}
                     className="relative z-10 px-3 py-1.5 rounded-md flex items-center justify-center gap-1.5 text-white text-sm"
@@ -171,11 +168,16 @@ export default function Home() {
                     <>
                       <button
                         onClick={handleCreateNew}
-                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition-all"
+                        className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition-all flex items-center gap-2"
                       >
                         <i className="ti ti-plus"></i> {t('addScript')}
                       </button>
-                      {/* 远程 Gist 列表 */}
+                      <div className="mt-4">
+                        <GistSelector
+                          onSelect={handleGistSelect}
+                          onCreateNew={handleCreateNew}
+                        />
+                      </div>
                     </>
                   )}
                 </div>
