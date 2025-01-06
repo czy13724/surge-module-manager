@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
+import { useRouter } from 'next/router';
 
 interface Script {
   name: string;
@@ -18,6 +19,7 @@ export default function LocalEditor() {
   const [moduleDesc, setModuleDesc] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
+  const router = useRouter();
 
   // 预添加脚本区域的状态
   const [scriptName, setScriptName] = useState('');
@@ -159,7 +161,7 @@ export default function LocalEditor() {
   }, [saveConfig]);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50/70 pt-20">
+    <div className="min-h-[calc(100vh-4rem)] bg-[url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg')] bg-cover bg-center bg-fixed pt-20">
       {/* 导入模块的文件输入（隐藏） */}
       <input
         type="file"
@@ -205,9 +207,9 @@ export default function LocalEditor() {
                       onChange={(e) => setScriptType(e.target.value)}
                       className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
-                      <option value="http-request">HTTP Request</option>
-                      <option value="http-response">HTTP Response</option>
-                      <option value="cron">Cron</option>
+                      <option value="http-request">{t('httpRequest')}</option>
+                      <option value="http-response">{t('httpResponse')}</option>
+                      <option value="cron">{t('cron')}</option>
                     </select>
                   </div>
 
