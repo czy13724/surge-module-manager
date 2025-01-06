@@ -52,7 +52,12 @@ export const translations = {
     saveSuccess: '保存成功！',
     saveFailed: '保存失败，请重试！',
     saveButton: '保存',
-    savingButton: '保存中...'
+    savingButton: '保存中...',
+
+    // 提示信息
+    loginRequired: '请先登录以使用远程功能',
+    loginPrompt: '远程模式需要登录才能使用完整功能。是否要登录？',
+    loginFirst: '请先登录！'
   },
   en: {
     // Navigation
@@ -107,6 +112,11 @@ export const translations = {
     saveSuccess: 'Save successful!',
     saveFailed: 'Save failed, please try again!',
     saveButton: 'Save',
-    savingButton: 'Saving...'
+    savingButton: 'Saving...',
+
+    // Messages
+    loginRequired: 'Please login to use remote features',
+    loginPrompt: 'Remote mode requires login for full functionality. Would you like to login?',
+    loginFirst: 'Please login first!'
   }
 };
