@@ -161,7 +161,7 @@ export default function LocalEditor() {
   }, [saveConfig]);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-[url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg')] bg-cover bg-center bg-fixed pt-20 w-full">
+    <div className="min-h-screen bg-[url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg')] bg-cover bg-center bg-fixed">
       {/* 导入模块的文件输入（隐藏） */}
       <input
         type="file"
@@ -174,7 +174,7 @@ export default function LocalEditor() {
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="min-h-full w-full"
+        className="min-h-full w-full pt-20"
       >
         {/* 主内容区域 */}
         <div className="max-w-[1400px] mx-auto px-8">
