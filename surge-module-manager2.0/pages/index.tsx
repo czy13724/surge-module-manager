@@ -4,7 +4,7 @@ import Head from 'next/head';
 import ModuleEditor from '../components/ModuleEditor';
 import GistSelector from '../components/GistSelector';
 import dynamic from 'next/dynamic';
-import { useTranslation } from '../hooks/useTranslation';
+import { useTranslation } from '../contexts/LanguageContext';
 import Navbar from '../components/Navbar';
 
 // 动态导入不需要 SSR 的组件
@@ -108,14 +108,15 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-sm text-center py-4">
-        <div className="space-y-1">
-          <div>
+      <footer className="fixed bottom-0 left-0 w-full text-center py-4">
+        <div className="inline-block bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <span>
             Powered by <a href="https://github.com/czy13724" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-600">Levi</a>
-          </div>
-          <div className="text-sm text-gray-500">
+          </span>
+          <span className="mx-1">•</span>
+          <span className="text-gray-500">
             Copyright &copy; {new Date().getFullYear()} Levi. All rights reserved.
-          </div>
+          </span>
         </div>
       </footer>
 

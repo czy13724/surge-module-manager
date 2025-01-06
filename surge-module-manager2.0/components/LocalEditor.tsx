@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useTranslation } from '../hooks/useTranslation';
+import { useTranslation } from '../contexts/LanguageContext';
 
 interface Script {
   name: string;

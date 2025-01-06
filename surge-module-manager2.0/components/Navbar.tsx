@@ -1,4 +1,4 @@
-import { useTranslation } from '../hooks/useTranslation';
+import { useTranslation } from '../contexts/LanguageContext';
 import Link from 'next/link';
 import { Session } from 'next-auth';
 
