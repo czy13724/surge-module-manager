@@ -86,7 +86,7 @@ export default function LocalEditor() {
   const saveConfig = useCallback(() => {
     try {
       // 实现保存逻辑
-      alert(t('saveSuccess'));
+      alert('保存成功！');
     } catch (error) {
       alert(t('saveFailed'));
     }
