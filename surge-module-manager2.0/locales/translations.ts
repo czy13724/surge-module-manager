@@ -59,6 +59,7 @@ export const translations = {
     download: '下载模块',
     copySuccess: '复制成功',
     copyFailed: '复制失败',
+    parseError: '解析模块文件失败',
     downloadSuccess: '下载成功',
     downloadFailed: '下载失败',
 
@@ -133,8 +134,9 @@ export const translations = {
     saveFailed: 'Save Failed',
     copyToClipboard: 'Copy to Clipboard',
     download: 'Download Module',
-    copySuccess: 'Copied Successfully',
-    copyFailed: 'Copy Failed',
+    copySuccess: 'Copied successfully',
+    copyFailed: 'Failed to copy',
+    parseError: 'Failed to parse module file',
     downloadSuccess: 'Download Successful',
     downloadFailed: 'Download Failed',
 

@@ -38,12 +38,59 @@ export default function LocalEditor() {
     }
   }, []);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const content = await file.text();
+      // 解析模块内容
+      const nameMatch = content.match(/#!name\s+(.+)/);
+      const descMatch = content.match(/#!desc\s+(.+)/);
+      const scriptSection = content.match(/\[Script\]\s*([\s\S]*?)(?=\[|$)/);
+
+      if (scriptSection) {
+        const scripts = scriptSection[1].trim().split('\n');
+        const parsedScripts: Script[] = scripts.map(script => {
+          const [name, params] = script.split('=').map(s => s.trim());
+          const paramMap = new Map();
+          params.split(',').forEach(param => {
+            const [key, value] = param.split('=').map(s => s.trim());
+            paramMap.set(key, value);
+          });
+
+          if (paramMap.get('type').includes('http')) {
+            return {
+              name,
+              type: paramMap.get('type'),
+              pattern: paramMap.get('pattern')?.replace(/"/g, '') || '',
+              scriptPath: paramMap.get('script-path') || '',
+              mitmDomain: paramMap.get('insert-body') || paramMap.get('response-body') || '',
+              mitmMode: paramMap.has('insert-body') ? 'insert' : 'response'
+            };
+          } else {
+            return {
+              name,
+              type: paramMap.get('type'),
+              pattern: paramMap.get('cronexp')?.replace(/"/g, '') || '',
+              scriptPath: paramMap.get('script-path') || '',
+              timeout: paramMap.get('timeout')
+            };
+          }
+        });
+
+        setScripts(parsedScripts);
+        setModuleName(nameMatch?.[1] || '');
+        setModuleDesc(descMatch?.[1] || '');
+      }
+    } catch (error) {
+      console.error('Failed to parse module file:', error);
+      alert(t('parseError'));
     }
-  }, []);
+
+    // 清除文件输入，这样同一个文件可以重复选择
+    event.target.value = '';
+  };
 
   const addScript = useCallback(() => {
     const newScript: Script = {
