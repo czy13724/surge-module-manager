@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST={"index.tsx -> ../components/LocalEditor":{"id":"index.tsx -> ../components/LocalEditor","files":["static/chunks/components_LocalEditor_tsx.js"]}}
+self.__REACT_LOADABLE_MANIFEST={"index.tsx -> ../components/LocalEditor":{id:7835,files:["static/chunks/835.f13759fe484274bf.js"]}};
