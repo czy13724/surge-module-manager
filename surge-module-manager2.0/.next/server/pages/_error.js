@@ -5,7 +5,7 @@ exports.id = 820;
 exports.ids = [820];
 exports.modules = {
 
-/***/ 648:
+/***/ 626:
 /***/ ((__unused_webpack_module, exports) => {
 
 var __webpack_unused_export__;
@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", ({
     value: true
 }));
 exports["default"] = void 0;
-var _interop_require_default = (__webpack_require__(648)/* ["default"] */ .Z);
+var _interop_require_default = (__webpack_require__(626)/* ["default"] */ .Z);
 var _react = _interop_require_default(__webpack_require__(689));
 var _head = _interop_require_default(__webpack_require__(957));
 const statusCodes = {

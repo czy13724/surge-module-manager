@@ -47,9 +47,28 @@ async function handler(req, res) {
         auth: session.accessToken
     });
     const { id  } = req.query;
+    if (!id || typeof id !== "string") {
+        return res.status(400).json({
+            message: "无效的 Gist ID"
+        });
+    }
     if (req.method === "PATCH") {
         try {
             const { content  } = req.body;
+            // First check if the gist exists and is accessible
+            try {
+                await octokit.gists.get({
+                    gist_id: id
+                });
+            } catch (error) {
+                if (error.status === 404) {
+                    return res.status(404).json({
+                        message: "Gist 不存在或无权访问",
+                        details: error.message
+                    });
+                }
+                throw error;
+            }
             const response = await octokit.gists.update({
                 gist_id: id,
                 files: {
@@ -58,32 +77,18 @@ async function handler(req, res) {
                     }
                 }
             });
-            res.status(200).json(response.data);
-        } catch (error) {
-            console.error("更新 Gist 失败:", error);
-            res.status(500).json({
-                message: "更新 Gist 失败"
-            });
-        }
-    } else if (req.method === "DELETE") {
-        try {
-            await octokit.gists.delete({
-                gist_id: id
-            });
-            res.status(204).end();
+            return res.status(200).json(response.data);
         } catch (error1) {
-            console.error("删除 Gist 失败:", error1);
-            res.status(500).json({
-                message: "删除 Gist 失败"
+            console.error("Error updating gist:", error1);
+            return res.status(error1.status || 500).json({
+                message: "更新 Gist 失败",
+                details: error1.message
             });
         }
-    } else {
-        res.setHeader("Allow", [
-            "PATCH",
-            "DELETE"
-        ]);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
+    return res.status(405).json({
+        message: "不支持的请求方法"
+    });
 }
 
 __webpack_async_result__();

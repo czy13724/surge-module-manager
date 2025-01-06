@@ -23,13 +23,16 @@ export default function ModuleEditor({ gistId, initialContent = '', onSave }: Pr
     try {
       if (gistId) {
         // 更新已存在的 Gist
-        await axios.patch(`/api/gists/${gistId}`, {
+        await axios.patch(`/api/github/gist`, {
+          gist_id: gistId,
           content,
         });
       } else {
         // 创建新的 Gist
-        await axios.post('/api/gists', {
+        await axios.post('/api/github/gists', {
+          filename: 'surge-module.sgmodule',
           content,
+          description: 'Surge Module',
         });
       }
       onSave();

@@ -5,28 +5,54 @@ import { Octokit } from '@octokit/rest';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({ req });
 
-  if (!session) {
+  if (!session?.accessToken) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   const octokit = new Octokit({
-    auth: session.accessToken as string
+    auth: session.accessToken
   });
 
-  if (req.method === 'PUT') {
+  if (req.method === 'PUT' || req.method === 'PATCH') {
     try {
-      const { gistId, filename, content } = req.body;
-      await octokit.gists.update({
-        gist_id: gistId,
+      const { gist_id, content } = req.body;
+      
+      if (!gist_id) {
+        return res.status(400).json({ error: 'Missing gist_id' });
+      }
+
+      // First check if the gist exists and is accessible
+      try {
+        await octokit.gists.get({
+          gist_id,
+        });
+      } catch (error: any) {
+        if (error.status === 404) {
+          return res.status(404).json({ 
+            error: 'Gist not found or inaccessible',
+            details: error.message 
+          });
+        }
+        throw error;
+      }
+
+      // Update the gist
+      const response = await octokit.gists.update({
+        gist_id,
         files: {
-          [filename]: {
+          'surge-module.sgmodule': {
             content
           }
         }
       });
-      return res.status(200).json({ success: true });
+      
+      return res.status(200).json(response.data);
     } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+      console.error('Error updating gist:', error);
+      return res.status(error.status || 500).json({ 
+        error: 'Failed to update gist',
+        details: error.message 
+      });
     }
   }
 

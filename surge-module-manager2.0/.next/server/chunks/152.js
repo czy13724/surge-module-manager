@@ -38,7 +38,7 @@ function _extends() {
 
 /***/ }),
 
-/***/ 648:
+/***/ 626:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -73,7 +73,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = dynamic;
 exports.noSSR = noSSR;
 var _extends = (__webpack_require__(495)/* ["default"] */ .Z);
-var _interop_require_default = (__webpack_require__(648)/* ["default"] */ .Z);
+var _interop_require_default = (__webpack_require__(626)/* ["default"] */ .Z);
 var _react = _interop_require_default(__webpack_require__(689));
 var _loadable = _interop_require_default(__webpack_require__(832));
 function dynamic(dynamicOptions, options) {
