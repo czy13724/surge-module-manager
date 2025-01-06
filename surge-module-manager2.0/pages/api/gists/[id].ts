@@ -18,11 +18,31 @@ export default async function handler(
 
   const { id } = req.query;
 
+  if (!id || typeof id !== 'string') {
+    return res.status(400).json({ message: '无效的 Gist ID' });
+  }
+
   if (req.method === 'PATCH') {
     try {
       const { content } = req.body;
+      
+      // First check if the gist exists and is accessible
+      try {
+        await octokit.gists.get({
+          gist_id: id,
+        });
+      } catch (error: any) {
+        if (error.status === 404) {
+          return res.status(404).json({ 
+            message: 'Gist 不存在或无权访问',
+            details: error.message 
+          });
+        }
+        throw error;
+      }
+
       const response = await octokit.gists.update({
-        gist_id: id as string,
+        gist_id: id,
         files: {
           'surge-module.sgmodule': {
             content,
@@ -30,24 +50,15 @@ export default async function handler(
         },
       });
 
-      res.status(200).json(response.data);
-    } catch (error) {
-      console.error('更新 Gist 失败:', error);
-      res.status(500).json({ message: '更新 Gist 失败' });
-    }
-  } else if (req.method === 'DELETE') {
-    try {
-      await octokit.gists.delete({
-        gist_id: id as string,
+      return res.status(200).json(response.data);
+    } catch (error: any) {
+      console.error('Error updating gist:', error);
+      return res.status(error.status || 500).json({ 
+        message: '更新 Gist 失败',
+        details: error.message 
       });
-
-      res.status(204).end();
-    } catch (error) {
-      console.error('删除 Gist 失败:', error);
-      res.status(500).json({ message: '删除 Gist 失败' });
     }
-  } else {
-    res.setHeader('Allow', ['PATCH', 'DELETE']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+
+  return res.status(405).json({ message: '不支持的请求方法' });
 }

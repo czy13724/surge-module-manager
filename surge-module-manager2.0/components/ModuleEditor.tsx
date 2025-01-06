@@ -33,9 +33,10 @@ export default function ModuleEditor({ gistId, initialContent = '', onSave }: Pr
         });
       }
       onSave();
-    } catch (error) {
+    } catch (error: any) {
       console.error('保存失败:', error);
-      alert('保存失败，请重试！');
+      const errorMessage = error.response?.data?.message || '保存失败，请重试！';
+      alert(errorMessage);
     } finally {
       setIsSaving(false);
     }
