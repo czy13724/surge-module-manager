@@ -1,0 +1,1 @@
+surge-module-manager
