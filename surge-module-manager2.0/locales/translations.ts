@@ -66,6 +66,14 @@ export const translations = {
     loginRequired: '需要登录',
     loginPrompt: '是否登录以使用完整功能？',
     loginFirst: '请先登录',
+
+    // GistSelector 相关
+    loading: '加载中...',
+    loadGistsFailed: '加载 Gist 失败',
+    selectGist: '选择 Gist',
+    createNew: '创建新配置',
+    untitledGist: '未命名配置',
+    noGistsFound: '没有找到私有 Gist，点击上方按钮创建新配置',
   },
   en: {
     // Navigation
@@ -134,5 +142,13 @@ export const translations = {
     loginRequired: 'Login Required',
     loginPrompt: 'Login to use full features?',
     loginFirst: 'Please login first',
+
+    // GistSelector related
+    loading: 'Loading...',
+    loadGistsFailed: 'Failed to load Gists',
+    selectGist: 'Select Gist',
+    createNew: 'Create New',
+    untitledGist: 'Untitled Gist',
+    noGistsFound: 'No private Gists found. Click the button above to create a new one',
   },
 };

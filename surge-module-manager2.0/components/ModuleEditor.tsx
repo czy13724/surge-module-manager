@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
-import { useTranslation } from '../hooks/useTranslation';
+import { useTranslation } from '../contexts/LanguageContext';
 import { useRouter } from 'next/router';
 
 interface Script {
