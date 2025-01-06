@@ -28,9 +28,12 @@ export default function GistSelector({ onSelect, onCreateNew }: Props) {
   const loadGists = async () => {
     try {
       const response = await axios.get('/api/github/gists');
+      console.log('Loaded gists:', response.data);
       setGists(response.data);
-    } catch (error) {
-      console.error('Failed to load gists:', error);
+    } catch (error: any) {
+      console.error('Failed to load gists:', error.response || error);
+      const errorMessage = error.response?.data?.error || error.message || '加载 Gist 失败';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

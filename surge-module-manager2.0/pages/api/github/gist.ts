@@ -23,14 +23,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // First check if the gist exists and is accessible
       try {
-        await octokit.gists.get({
+        const gistResponse = await octokit.gists.get({
           gist_id,
         });
+        
+        // Check if the gist is accessible and belongs to the user
+        if (!gistResponse.data || gistResponse.data.owner?.login !== session.user?.name) {
+          return res.status(403).json({ 
+            error: 'You do not have permission to access this gist'
+          });
+        }
       } catch (error: any) {
         if (error.status === 404) {
           return res.status(404).json({ 
-            error: 'Gist not found or inaccessible',
-            details: error.message 
+            error: 'Gist not found or inaccessible'
           });
         }
         throw error;
@@ -50,8 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: any) {
       console.error('Error updating gist:', error);
       return res.status(error.status || 500).json({ 
-        error: 'Failed to update gist',
-        details: error.message 
+        error: error.message || 'Failed to update gist'
       });
     }
   }

@@ -1,8 +1,13 @@
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { JWT } from 'next-auth/jwt';
+import { Session } from 'next-auth';
 
 interface Token extends JWT {
+  accessToken?: string;
+}
+
+interface CustomSession extends Session {
   accessToken?: string;
 }
 
@@ -29,7 +34,7 @@ export default NextAuth({
       }
       return token as Token;
     },
-    async session({ session, token }: { session: any; token: Token }) {
+    async session({ session, token }: { session: CustomSession; token: Token }): Promise<CustomSession> {
       session.accessToken = token.accessToken;
       return session;
     },

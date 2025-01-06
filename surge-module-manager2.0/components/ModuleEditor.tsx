@@ -23,22 +23,24 @@ export default function ModuleEditor({ gistId, initialContent = '', onSave }: Pr
     try {
       if (gistId) {
         // 更新已存在的 Gist
-        await axios.patch(`/api/github/gist`, {
+        const response = await axios.patch(`/api/github/gist`, {
           gist_id: gistId,
           content,
         });
+        console.log('Gist updated:', response.data);
       } else {
         // 创建新的 Gist
-        await axios.post('/api/github/gists', {
+        const response = await axios.post('/api/github/gists', {
           filename: 'surge-module.sgmodule',
           content,
           description: 'Surge Module',
         });
+        console.log('New gist created:', response.data);
       }
       onSave();
     } catch (error: any) {
-      console.error('保存失败:', error);
-      const errorMessage = error.response?.data?.message || '保存失败，请重试！';
+      console.error('保存失败:', error.response || error);
+      const errorMessage = error.response?.data?.error || error.message || '保存失败，请重试！';
       alert(errorMessage);
     } finally {
       setIsSaving(false);
