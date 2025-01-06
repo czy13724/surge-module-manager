@@ -5,6 +5,7 @@ import ModuleEditor from '../components/ModuleEditor';
 import GistSelector from '../components/GistSelector';
 import dynamic from 'next/dynamic';
 import { useTranslation } from '../hooks/useTranslation';
+import Navbar from '../components/Navbar';
 
 // 动态导入不需要 SSR 的组件
 const LocalEditor = dynamic(() => import('../components/LocalEditor'), {
@@ -80,63 +81,19 @@ export default function Home() {
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.40.0/tabler-icons.min.css" />
       </Head>
 
-      <main className="min-h-screen bg-gray-50">
-        {/* 导航栏 */}
-        <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-8">
-                <h1 className="text-xl font-semibold text-gray-900">{t('title')}</h1>
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => handleModeSwitch('local')}
-                    className={`px-4 py-2 rounded-md ${
-                      mode === 'local'
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {t('localMode')}
-                  </button>
-                  <button
-                    onClick={() => handleModeSwitch('remote')}
-                    className={`px-4 py-2 rounded-md ${
-                      mode === 'remote'
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {t('remoteMode')}
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={toggleLanguage}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-900"
-                >
-                  {language === 'zh' ? 'EN' : '中文'}
-                </button>
-                {session ? (
-                  <button
-                    onClick={() => signOut()}
-                    className="px-4 py-2 text-red-600 hover:text-red-700"
-                  >
-                    {t('logout')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => signIn('github')}
-                    className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800"
-                  >
-                    {t('login')}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </nav>
+      <Navbar 
+        onImportClick={handleCreateNew} 
+        onSaveConfig={() => {}} 
+        mode={mode} 
+        onModeSwitch={handleModeSwitch} 
+        session={session} 
+        onLogin={() => signIn('github')} 
+        onLogout={() => signOut()} 
+        onLanguageSwitch={toggleLanguage} 
+        language={language} 
+      />
 
+      <main className="min-h-screen bg-gray-50">
         {/* 主要内容区域 */}
         <div className="container mx-auto px-4 pt-20">
           {mode === 'local' ? (

@@ -1,15 +1,31 @@
 import { useTranslation } from '../hooks/useTranslation';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { Session } from 'next-auth';
 
 interface NavbarProps {
   onImportClick: () => void;
   onSaveConfig: () => void;
+  mode: 'local' | 'remote';
+  onModeSwitch: (mode: 'local' | 'remote') => void;
+  session: Session | null;
+  onLogin: () => void;
+  onLogout: () => void;
+  onLanguageSwitch: () => void;
+  language: 'zh' | 'en';
 }
 
-export default function Navbar({ onImportClick, onSaveConfig }: NavbarProps) {
-  const { t, toggleLanguage, language } = useTranslation();
-  const router = useRouter();
+export default function Navbar({
+  onImportClick,
+  onSaveConfig,
+  mode,
+  onModeSwitch,
+  session,
+  onLogin,
+  onLogout,
+  onLanguageSwitch,
+  language
+}: NavbarProps) {
+  const { t } = useTranslation();
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -27,7 +43,7 @@ export default function Navbar({ onImportClick, onSaveConfig }: NavbarProps) {
 
           {/* Center: Actions */}
           <div className="flex items-center space-x-4">
-            {router.pathname === '/' && (
+            {mode === 'local' && (
               <>
                 <button
                   onClick={onImportClick}
@@ -50,29 +66,44 @@ export default function Navbar({ onImportClick, onSaveConfig }: NavbarProps) {
           {/* Right: Mode, Language and Login */}
           <div className="flex items-center space-x-2">
             <button
-              onClick={toggleLanguage}
+              onClick={onLanguageSwitch}
               className="px-3 py-1.5 text-gray-600 hover:text-gray-900 transition-all"
             >
               {language === 'en' ? 'EN' : '中文'}
             </button>
-            <Link href="/">
-              <a className={`px-4 py-1.5 rounded-l-lg transition-all ${
-                router.pathname === '/' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}>
-                {t('localMode')}
-              </a>
-            </Link>
-            <Link href="/remote">
-              <a className={`px-4 py-1.5 rounded-r-lg transition-all ${
-                router.pathname === '/remote' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}>
-                {t('remoteMode')}
-              </a>
-            </Link>
-            <button className="px-4 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all flex items-center space-x-1">
-              <i className="ti ti-brand-github"></i>
-              <span>{t('login')}</span>
+            <button
+              onClick={() => onModeSwitch('local')}
+              className={`px-4 py-1.5 rounded-l-lg transition-all ${
+                mode === 'local' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {t('localMode')}
             </button>
+            <button
+              onClick={() => onModeSwitch('remote')}
+              className={`px-4 py-1.5 rounded-r-lg transition-all ${
+                mode === 'remote' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {t('remoteMode')}
+            </button>
+            {session ? (
+              <button
+                onClick={onLogout}
+                className="px-4 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all flex items-center space-x-1"
+              >
+                <i className="ti ti-logout"></i>
+                <span>{t('logout')}</span>
+              </button>
+            ) : (
+              <button
+                onClick={onLogin}
+                className="px-4 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all flex items-center space-x-1"
+              >
+                <i className="ti ti-brand-github"></i>
+                <span>{t('login')}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
