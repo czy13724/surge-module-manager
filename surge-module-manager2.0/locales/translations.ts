@@ -55,6 +55,12 @@ export const translations = {
     savingButton: '保存中...',
     saveConfig: '保存配置',
     saveFailed: '保存失败',
+    copyToClipboard: '复制到剪贴板',
+    download: '下载',
+    copySuccess: '复制成功',
+    copyFailed: '复制失败',
+    downloadSuccess: '下载成功',
+    downloadFailed: '下载失败',
 
     // 登录相关
     loginRequired: '需要登录',
@@ -117,6 +123,12 @@ export const translations = {
     savingButton: 'Saving...',
     saveConfig: 'Save Config',
     saveFailed: 'Save Failed',
+    copyToClipboard: 'Copy to Clipboard',
+    download: 'Download',
+    copySuccess: 'Copied Successfully',
+    copyFailed: 'Copy Failed',
+    downloadSuccess: 'Download Successful',
+    downloadFailed: 'Download Failed',
 
     // Login Related
     loginRequired: 'Login Required',
