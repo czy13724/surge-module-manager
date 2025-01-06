@@ -47,6 +47,14 @@ export default function Home() {
     setSelectedGist(null);
   };
 
+  const handleImportClick = () => {
+    // 触发 LocalEditor 中的文件输入
+    const fileInput = document.querySelector('#fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   const handleModeSwitch = (newMode: 'local' | 'remote') => {
     if (newMode === 'remote' && !session) {
       const confirmSwitch = window.confirm(t('loginPrompt'));
@@ -83,8 +91,7 @@ export default function Home() {
       </Head>
 
       <Navbar 
-        onImportClick={handleCreateNew} 
-        onSaveConfig={() => {}} 
+        onImportClick={handleImportClick} 
         mode={mode} 
         onModeSwitch={handleModeSwitch} 
         session={session} 

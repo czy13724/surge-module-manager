@@ -4,7 +4,6 @@ import { Session } from 'next-auth';
 
 interface NavbarProps {
   onImportClick: () => void;
-  onSaveConfig: () => void;
   mode: 'local' | 'remote';
   onModeSwitch: (mode: 'local' | 'remote') => void;
   session: Session | null;
@@ -16,7 +15,6 @@ interface NavbarProps {
 
 export default function Navbar({
   onImportClick,
-  onSaveConfig,
   mode,
   onModeSwitch,
   session,
@@ -44,49 +42,47 @@ export default function Navbar({
           {/* Center: Actions */}
           <div className="flex items-center space-x-4">
             {mode === 'local' && (
-              <>
-                <button
-                  onClick={onImportClick}
-                  className="flex items-center space-x-1 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-all"
-                >
-                  <i className="ti ti-upload"></i>
-                  <span>{t('importModule')}</span>
-                </button>
-                <button
-                  onClick={onSaveConfig}
-                  className="flex items-center space-x-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
-                >
-                  <i className="ti ti-device-floppy"></i>
-                  <span>{t('saveConfig')}</span>
-                </button>
-              </>
+              <button
+                onClick={onImportClick}
+                className="flex items-center space-x-1 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-all"
+              >
+                <i className="ti ti-file-import"></i>
+                <span>{t('importModule')}</span>
+              </button>
             )}
           </div>
 
-          {/* Right: Mode, Language and Login */}
-          <div className="flex items-center space-x-2">
+          {/* Right: Mode Switch & Auth */}
+          <div className="flex items-center space-x-4">
+            {/* Mode Switch */}
+            <div className="flex rounded-lg overflow-hidden">
+              <button
+                onClick={() => onModeSwitch('local')}
+                className={`px-4 py-1.5 transition-colors ${
+                  mode === 'local' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {t('localMode')}
+              </button>
+              <button
+                onClick={() => onModeSwitch('remote')}
+                className={`px-4 py-1.5 transition-colors ${
+                  mode === 'remote' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {t('remoteMode')}
+              </button>
+            </div>
+
+            {/* Language Switch */}
             <button
               onClick={onLanguageSwitch}
-              className="px-3 py-1.5 text-gray-600 hover:text-gray-900 transition-all"
+              className="px-4 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all flex items-center space-x-1"
             >
-              {language === 'en' ? 'EN' : '中文'}
+              {language === 'zh' ? 'EN' : '中文'}
             </button>
-            <button
-              onClick={() => onModeSwitch('local')}
-              className={`px-4 py-1.5 rounded-l-lg transition-all ${
-                mode === 'local' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {t('localMode')}
-            </button>
-            <button
-              onClick={() => onModeSwitch('remote')}
-              className={`px-4 py-1.5 rounded-r-lg transition-all ${
-                mode === 'remote' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {t('remoteMode')}
-            </button>
+
+            {/* Auth Button */}
             {session ? (
               <button
                 onClick={onLogout}
