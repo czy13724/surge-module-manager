@@ -86,7 +86,7 @@ export default function LocalEditor() {
   const saveConfig = useCallback(() => {
     try {
       // 实现保存逻辑
-      alert('保存成功！');
+      alert(t('saveSuccess'));
     } catch (error) {
       alert(t('saveFailed'));
     }
@@ -367,7 +367,7 @@ export default function LocalEditor() {
                               onClick={() => {}}
                               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all text-sm"
                             >
-                              <i className="ti ti-edit"></i> {t('edit')}
+                              <i className="ti ti-edit"></i> {t('editScript')}
                             </button>
                             <button
                               onClick={() => deleteScript(index)}
