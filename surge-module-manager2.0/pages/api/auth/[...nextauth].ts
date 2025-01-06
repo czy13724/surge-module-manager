@@ -1,5 +1,10 @@
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
+import { JWT } from 'next-auth/jwt';
+
+interface Token extends JWT {
+  accessToken?: string;
+}
 
 export default NextAuth({
   providers: [
@@ -18,13 +23,13 @@ export default NextAuth({
     error: '/',
   },
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account }): Promise<Token> {
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
-      return token;
+      return token as Token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: Token }) {
       session.accessToken = token.accessToken;
       return session;
     },

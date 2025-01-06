@@ -6,7 +6,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onImportClick, onSaveConfig }: NavbarProps) {
-  const { t, toggleLanguage, currentLanguage } = useTranslation();
+  const { t, toggleLanguage, language } = useTranslation();
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -44,7 +44,7 @@ export default function Navbar({ onImportClick, onSaveConfig }: NavbarProps) {
               className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-all"
             >
               <i className="ti ti-language text-xl"></i>
-              <span>{currentLanguage === 'en' ? '中文' : 'English'}</span>
+              <span>{language === 'en' ? '中文' : 'English'}</span>
             </button>
           </div>
         </div>
