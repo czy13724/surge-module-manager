@@ -8,7 +8,7 @@ export const translations = {
     logout: '登出',
     back: '返回',
     preview: '预览',
-    edit: '编辑',
+    editMode: '编辑',
 
     // 预添加脚本区
     addScriptSection: '预添加脚本区',
@@ -35,7 +35,7 @@ export const translations = {
 
     // 已存在脚本区
     existingScriptsSection: '已存在脚本区',
-    edit: '编辑',
+    editScript: '编辑',
     delete: '删除',
 
     // 导入模块
@@ -50,17 +50,16 @@ export const translations = {
     moduleDesc: '模块描述',
     noScriptsMessage: '还没有添加任何脚本',
 
-    // 保存配置
-    saveConfig: '保存配置',
-    saveSuccess: '保存成功！',
-    saveFailed: '保存失败，请重试！',
+    // 保存相关
     saveButton: '保存',
     savingButton: '保存中...',
+    saveConfig: '保存配置',
+    saveFailed: '保存失败',
 
-    // 提示信息
-    loginRequired: '请先登录以使用远程功能',
-    loginPrompt: '远程模式需要登录才能使用完整功能。是否要登录？',
-    loginFirst: '请先登录！'
+    // 登录相关
+    loginRequired: '需要登录',
+    loginPrompt: '是否登录以使用完整功能？',
+    loginFirst: '请先登录',
   },
   en: {
     // Navigation
@@ -71,7 +70,7 @@ export const translations = {
     logout: 'Logout',
     back: 'Back',
     preview: 'Preview',
-    edit: 'Edit',
+    editMode: 'Edit',
 
     // Add Script Section
     addScriptSection: 'Add Script',
@@ -81,14 +80,14 @@ export const translations = {
     httpRequest: 'HTTP Request',
     httpResponse: 'HTTP Response',
     cron: 'Cron',
-    httpPattern: 'Regular Expression',
+    httpPattern: 'Pattern',
     httpPatternPlaceholder: 'e.g., https://example.com/api.*',
     mitmDomain: 'MITM Domain',
     mitmDomainPlaceholder: 'e.g., api.example.com',
     mitmMode: 'MITM Mode',
     mitmInsert: 'Insert (%INSERT%)',
     mitmAppend: 'Append (%APPEND%)',
-    cronPattern: 'Cron Expression',
+    cronPattern: 'Cron Pattern',
     cronPatternPlaceholder: 'e.g., 0 8 * * * (8 AM daily)',
     wakeSystem: 'Wake System',
     timeout: 'Timeout',
@@ -98,10 +97,10 @@ export const translations = {
 
     // Existing Scripts Section
     existingScriptsSection: 'Existing Scripts',
-    edit: 'Edit',
+    editScript: 'Edit',
     delete: 'Delete',
 
-    // Import Module
+    // Import Section
     importSection: 'Import Module',
     importModule: 'Import Module',
     dropFileHint: 'Drop module file here or click to select',
@@ -113,16 +112,15 @@ export const translations = {
     moduleDesc: 'Module Description',
     noScriptsMessage: 'No scripts added yet',
 
-    // Save Configuration
-    saveConfig: 'Save Configuration',
-    saveSuccess: 'Save successful!',
-    saveFailed: 'Save failed, please try again!',
+    // Save Related
     saveButton: 'Save',
     savingButton: 'Saving...',
+    saveConfig: 'Save Config',
+    saveFailed: 'Save Failed',
 
-    // Messages
-    loginRequired: 'Please login to use remote features',
-    loginPrompt: 'Remote mode requires login for full functionality. Would you like to login?',
-    loginFirst: 'Please login first!'
-  }
+    // Login Related
+    loginRequired: 'Login Required',
+    loginPrompt: 'Login to use full features?',
+    loginFirst: 'Please login first',
+  },
 };

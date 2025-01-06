@@ -147,7 +147,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave }: Props) 
           className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors"
         >
           <i className={`ti ti-${showPreview ? 'edit' : 'eye'}`}></i>
-          {showPreview ? t('edit') : t('preview')}
+          {showPreview ? t('editMode') : t('preview')}
         </button>
       </div>
 
@@ -363,7 +363,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave }: Props) 
                               onClick={() => {}}
                               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all text-sm"
                             >
-                              <i className="ti ti-edit"></i> {t('edit')}
+                              <i className="ti ti-edit"></i> {t('editScript')}
                             </button>
                             <button
                               onClick={() => deleteScript(index)}
