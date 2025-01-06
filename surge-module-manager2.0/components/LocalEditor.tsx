@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
-import { useRouter } from 'next/router';
 
 interface Script {
   name: string;
@@ -19,7 +18,6 @@ export default function LocalEditor() {
   const [moduleDesc, setModuleDesc] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
-  const router = useRouter();
 
   // 预添加脚本区域的状态
   const [scriptName, setScriptName] = useState('');
@@ -98,55 +96,38 @@ export default function LocalEditor() {
     fileInputRef.current?.click();
   }, []);
 
-  const generateModuleContent = useCallback(() => {
-    const lines = [];
+  const generateConfig = useCallback(() => {
+    const header = `#!name=${moduleName}\n#!desc=${moduleDesc}\n\n[Script]\n`;
+    const scriptConfigs = scripts.map(script => {
+      if (script.type === 'http-request') {
+        return `${script.name} = type=http-request,pattern=${script.pattern}${script.mitmDomain ? `,domain=${script.mitmDomain}` : ''}${script.mitmMode ? `,mode=${script.mitmMode}` : ''},script-path=${script.scriptPath}`;
+      } else {
+        return `${script.name} = type=cron,pattern=${script.pattern}${script.timeout ? `,timeout=${script.timeout}` : ''},script-path=${script.scriptPath}`;
+      }
+    }).join('\n');
     
-    // 添加模块名称和描述
-    lines.push(`#!name=${moduleName}`);
-    if (moduleDesc) {
-      lines.push(`#!desc=${moduleDesc}`);
-    }
-    lines.push('');  // 空行分隔
+    return `${header}${scriptConfigs}`;
+  }, [moduleName, moduleDesc, scripts]);
 
-    // 添加脚本
-    scripts.forEach(script => {
-      lines.push(`[Script]`);
-      lines.push(`${script.name} = type=${script.type},pattern=${script.pattern},script-path=${script.scriptPath}${
-        script.type.includes('http') ? `,mitm-domain=${script.mitmDomain},mitm-mode=${script.mitmMode}` : 
-        script.type === 'cron' ? `,timeout=${script.timeout}` : ''
-      }`);
-      lines.push('');  // 空行分隔
-    });
+  const handleDownload = useCallback(() => {
+    const config = generateConfig();
+    const blob = new Blob([config], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${moduleName || 'surge-module'}.sgmodule`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [generateConfig, moduleName]);
 
-    return lines.join('\n');
-  }, [scripts, moduleName, moduleDesc]);
-
-  const copyToClipboard = useCallback(async () => {
-    try {
-      const content = generateModuleContent();
-      await navigator.clipboard.writeText(content);
-      alert(t('copySuccess'));
-    } catch (error) {
-      alert(t('copyFailed'));
-    }
-  }, [generateModuleContent, t]);
-
-  const downloadModule = useCallback(() => {
-    try {
-      const content = generateModuleContent();
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${moduleName || 'surge-module'}.sgmodule`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      alert(t('downloadFailed'));
-    }
-  }, [generateModuleContent, moduleName, t]);
+  const handleCopyToClipboard = useCallback(() => {
+    const config = generateConfig();
+    navigator.clipboard.writeText(config)
+      .then(() => alert(t('copySuccess')))
+      .catch(() => alert(t('copyFailed')));
+  }, [generateConfig, t]);
 
   // 添加保存事件监听器
   useEffect(() => {
@@ -161,7 +142,7 @@ export default function LocalEditor() {
   }, [saveConfig]);
 
   return (
-    <div className="min-h-screen bg-[url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg')] bg-cover bg-center bg-fixed">
+    <div className="min-h-[calc(100vh-4rem)] bg-gray-50/70 pt-20">
       {/* 导入模块的文件输入（隐藏） */}
       <input
         type="file"
@@ -174,10 +155,10 @@ export default function LocalEditor() {
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        className="min-h-full w-full pt-20"
+        className="min-h-full"
       >
         {/* 主内容区域 */}
-        <div className="max-w-[1400px] mx-auto px-8">
+        <div className="container mx-auto p-8">
           <div className="grid grid-cols-12 gap-8">
             {/* 左侧：预添加脚本区 */}
             <div className="col-span-7">
@@ -207,9 +188,9 @@ export default function LocalEditor() {
                       onChange={(e) => setScriptType(e.target.value)}
                       className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
-                      <option value="http-request">{t('httpRequest')}</option>
-                      <option value="http-response">{t('httpResponse')}</option>
-                      <option value="cron">{t('cron')}</option>
+                      <option value="http-request">HTTP Request</option>
+                      <option value="http-response">HTTP Response</option>
+                      <option value="cron">Cron</option>
                     </select>
                   </div>
 
@@ -369,7 +350,7 @@ export default function LocalEditor() {
                               onClick={() => {}}
                               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all text-sm"
                             >
-                              <i className="ti ti-edit"></i> {t('editScript')}
+                              <i className="ti ti-edit"></i> {t('edit')}
                             </button>
                             <button
                               onClick={() => deleteScript(index)}
@@ -416,18 +397,24 @@ export default function LocalEditor() {
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
-                    <div className="flex gap-2 pt-4">
+                    <div className="flex gap-2 mt-4">
                       <button
-                        onClick={copyToClipboard}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all text-sm flex items-center justify-center gap-1"
+                        onClick={saveConfig}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                       >
-                        <i className="ti ti-clipboard"></i> {t('copyToClipboard')}
+                        {t('saveButton')}
                       </button>
                       <button
-                        onClick={downloadModule}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all text-sm flex items-center justify-center gap-1"
+                        onClick={handleDownload}
+                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
                       >
-                        <i className="ti ti-download"></i> {t('download')}
+                        {t('download')}
+                      </button>
+                      <button
+                        onClick={handleCopyToClipboard}
+                        className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                      >
+                        {t('copyToClipboard')}
                       </button>
                     </div>
                   </div>
