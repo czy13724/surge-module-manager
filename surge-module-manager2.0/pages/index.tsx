@@ -94,8 +94,8 @@ export default function Home() {
         language={language} 
       />
 
-      <main className="min-h-screen bg-gray-50">
-        {/* 主要内容区域 */}
+      <main className="min-h-screen">
+        {/* 主内容区域 */}
         <div className="container mx-auto px-4 pt-20">
           {mode === 'local' ? (
             <LocalEditor />

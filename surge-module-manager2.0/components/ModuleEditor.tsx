@@ -132,7 +132,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50/70 pt-20">
+    <div className="min-h-[calc(100vh-4rem)] pt-20">
       {/* 添加返回按钮和预览按钮 */}
       <div className="container mx-auto px-8 pb-4 flex justify-between items-center">
         <button
