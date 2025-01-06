@@ -2,6 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    appDir: false
+  },
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    GITHUB_ID: process.env.GITHUB_ID,
+    GITHUB_SECRET: process.env.GITHUB_SECRET
+  },
   // 添加输出配置
   output: 'standalone',
   // 添加基础路径配置
