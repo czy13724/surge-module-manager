@@ -45,17 +45,14 @@ export const translations = {
     editDetailsSection: '编辑模块详情',
     moduleName: '模块名称',
     moduleDesc: '模块描述',
+    noScriptsMessage: '还没有添加任何脚本',
 
     // 保存配置
     saveConfig: '保存配置',
     saveSuccess: '保存成功！',
     saveFailed: '保存失败，请重试！',
-
-    // 提示信息
-    loginRequired: '请先登录以使用远程功能',
-    loginPrompt: '远程模式需要登录才能使用完整功能。是否要登录？',
-    loginFirst: '请先登录！',
-    noScriptsMessage: '您暂未添加脚本，请在预添加脚本区增加脚本。',
+    saveButton: '保存',
+    savingButton: '保存中...'
   },
   en: {
     // Navigation
@@ -68,11 +65,11 @@ export const translations = {
     // Add Script Section
     addScriptSection: 'Add Script',
     scriptName: 'Script Name',
-    scriptNamePlaceholder: 'Enter your script name',
+    scriptNamePlaceholder: 'Name your script',
     type: 'Type',
     httpRequest: 'HTTP Request',
     httpResponse: 'HTTP Response',
-    cron: 'Cron Task',
+    cron: 'Cron',
     httpPattern: 'Regular Expression',
     httpPatternPlaceholder: 'e.g., https://example.com/api.*',
     mitmDomain: 'MITM Domain',
@@ -81,7 +78,7 @@ export const translations = {
     mitmInsert: 'Insert (%INSERT%)',
     mitmAppend: 'Append (%APPEND%)',
     cronPattern: 'Cron Expression',
-    cronPatternPlaceholder: 'e.g., 0 8 * * * (8:00 AM daily)',
+    cronPatternPlaceholder: 'e.g., 0 8 * * * (8 AM daily)',
     wakeSystem: 'Wake System',
     timeout: 'Timeout',
     scriptPath: 'Script Path',
@@ -99,20 +96,17 @@ export const translations = {
     dropFileHint: 'Drop module file here or click to select',
     selectFile: 'Select File',
 
-    // Edit Module Details
+    // Edit Details Section
     editDetailsSection: 'Edit Module Details',
     moduleName: 'Module Name',
     moduleDesc: 'Module Description',
+    noScriptsMessage: 'No scripts added yet',
 
-    // Save Config
+    // Save Configuration
     saveConfig: 'Save Configuration',
     saveSuccess: 'Save successful!',
     saveFailed: 'Save failed, please try again!',
-
-    // Messages
-    loginRequired: 'Please login to use remote features',
-    loginPrompt: 'Remote mode requires login for full functionality. Would you like to login?',
-    loginFirst: 'Please login first!',
-    noScriptsMessage: 'No scripts added yet. Please add scripts in the Add Script section.',
+    saveButton: 'Save',
+    savingButton: 'Saving...'
   }
 };

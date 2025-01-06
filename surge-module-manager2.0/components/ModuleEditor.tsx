@@ -375,7 +375,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave }: Props) 
                       onClick={handleSave}
                       className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-lg transition-all text-lg font-semibold flex items-center justify-center gap-2"
                     >
-                      <i className="ti ti-device-floppy"></i> {t('save')}
+                      <i className="ti ti-device-floppy"></i> {t('saveButton')}
                     </button>
                   </div>
                 </div>
