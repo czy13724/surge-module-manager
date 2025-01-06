@@ -1,0 +1,118 @@
+export const translations = {
+  zh: {
+    // 导航栏
+    title: 'Surge Module Manager',
+    localMode: '本地模式',
+    remoteMode: '远程模式',
+    login: 'GitHub 登录',
+    logout: '登出',
+
+    // 预添加脚本区
+    addScriptSection: '预添加脚本区',
+    scriptName: '脚本名称',
+    scriptNamePlaceholder: '给你的脚本起个名字',
+    type: '类型',
+    httpRequest: 'HTTP 请求',
+    httpResponse: 'HTTP 响应',
+    cron: '定时任务',
+    httpPattern: '正则表达式',
+    httpPatternPlaceholder: '例如: https://example.com/api.*',
+    mitmDomain: 'MITM 域名',
+    mitmDomainPlaceholder: '例如: api.example.com',
+    mitmMode: 'MITM 模式',
+    mitmInsert: '插入 (%INSERT%)',
+    mitmAppend: '追加 (%APPEND%)',
+    cronPattern: 'Cron 表达式',
+    cronPatternPlaceholder: '例如: 0 8 * * * (每天早上8点)',
+    wakeSystem: '唤醒系统',
+    timeout: '超时设置',
+    scriptPath: '脚本路径',
+    scriptPathPlaceholder: '远程URL或本地路径',
+    addScript: '添加脚本',
+
+    // 已存在脚本区
+    existingScriptsSection: '已存在脚本区',
+    edit: '编辑',
+    delete: '删除',
+
+    // 导入模块
+    importSection: '导入模块',
+    importModule: '导入模块',
+    dropFileHint: '拖放模块文件到此处或点击选择',
+    selectFile: '选择文件',
+
+    // 编辑模块详情
+    editDetailsSection: '编辑模块详情',
+    moduleName: '模块名称',
+    moduleDesc: '模块描述',
+
+    // 保存配置
+    saveConfig: '保存配置',
+    saveSuccess: '保存成功！',
+    saveFailed: '保存失败，请重试！',
+
+    // 提示信息
+    loginRequired: '请先登录以使用远程功能',
+    loginPrompt: '远程模式需要登录才能使用完整功能。是否要登录？',
+    loginFirst: '请先登录！',
+    noScriptsMessage: '您暂未添加脚本，请在预添加脚本区增加脚本。',
+  },
+  en: {
+    // Navigation
+    title: 'Surge Module Manager',
+    localMode: 'Local Mode',
+    remoteMode: 'Remote Mode',
+    login: 'GitHub Login',
+    logout: 'Logout',
+
+    // Add Script Section
+    addScriptSection: 'Add Script',
+    scriptName: 'Script Name',
+    scriptNamePlaceholder: 'Enter your script name',
+    type: 'Type',
+    httpRequest: 'HTTP Request',
+    httpResponse: 'HTTP Response',
+    cron: 'Cron Task',
+    httpPattern: 'Regular Expression',
+    httpPatternPlaceholder: 'e.g., https://example.com/api.*',
+    mitmDomain: 'MITM Domain',
+    mitmDomainPlaceholder: 'e.g., api.example.com',
+    mitmMode: 'MITM Mode',
+    mitmInsert: 'Insert (%INSERT%)',
+    mitmAppend: 'Append (%APPEND%)',
+    cronPattern: 'Cron Expression',
+    cronPatternPlaceholder: 'e.g., 0 8 * * * (8:00 AM daily)',
+    wakeSystem: 'Wake System',
+    timeout: 'Timeout',
+    scriptPath: 'Script Path',
+    scriptPathPlaceholder: 'Remote URL or local path',
+    addScript: 'Add Script',
+
+    // Existing Scripts Section
+    existingScriptsSection: 'Existing Scripts',
+    edit: 'Edit',
+    delete: 'Delete',
+
+    // Import Module
+    importSection: 'Import Module',
+    importModule: 'Import Module',
+    dropFileHint: 'Drop module file here or click to select',
+    selectFile: 'Select File',
+
+    // Edit Module Details
+    editDetailsSection: 'Edit Module Details',
+    moduleName: 'Module Name',
+    moduleDesc: 'Module Description',
+
+    // Save Config
+    saveConfig: 'Save Configuration',
+    saveSuccess: 'Save successful!',
+    saveFailed: 'Save failed, please try again!',
+
+    // Messages
+    loginRequired: 'Please login to use remote features',
+    loginPrompt: 'Remote mode requires login for full functionality. Would you like to login?',
+    loginFirst: 'Please login first!',
+    noScriptsMessage: 'No scripts added yet. Please add scripts in the Add Script section.',
+  }
+};

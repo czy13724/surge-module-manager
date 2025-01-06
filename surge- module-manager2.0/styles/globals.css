@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+}
+
+body {
+  min-height: 100vh;
+  background: url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg') center/cover fixed no-repeat;
+}
+
+.form-group {
+  @apply space-y-1;
+}
+
+.form-group label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
+}
