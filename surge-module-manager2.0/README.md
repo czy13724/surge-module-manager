@@ -4,55 +4,20 @@ A modern web application for managing Surge modules, built with Next.js and depl
 
 ## Features
 
-- GitHub OAuth authentication
-- Edit module files from GitHub/Gist
-- Support for HTTP and Cron type scripts
-- Modern and responsive user interface
 - Local and remote mode support
 - Bilingual support (English/Chinese)
+- GitHub OAuth authentication
+- Module import and export
+- HTTP and Cron type scripts management
+- Modern responsive interface
+- Real-time preview and editing
+- One-click copy and download
 
 ## Getting Started
 
-### Deploy to Vercel
+### Online Usage
 
-1. Fork this repository to your GitHub account
-
-2. Create a new OAuth App in GitHub:
-   - Go to Settings > Developer settings > OAuth Apps > New OAuth App
-   - Set Homepage URL to your Vercel domain
-   - Set Authorization callback URL to `https://your-domain/api/auth/callback/github`
-
-3. Import project in Vercel:
-   - Connect your GitHub repository
-   - Set environment variables:
-     ```
-     NEXTAUTH_URL=https://your-domain
-     # Generate a secret using: openssl rand -base64 32
-     # Or use: https://generate-secret.vercel.app/32
-     NEXTAUTH_SECRET=generated-secret
-     GITHUB_ID=github-oauth-app-client-id
-     GITHUB_SECRET=github-oauth-app-client-secret
-     ```
-
-4. After deployment, visit your Vercel domain to start using the app
-
-### Remote Storage Options
-
-In remote mode, you can choose where to store your module files:
-
-1. **GitHub Repository**
-   - Store modules as files in a repository
-   - Supports private repositories
-   - Better for version control and collaboration
-   - Set repository name in settings
-
-2. **GitHub Gist**
-   - Store each module as a Gist
-   - Supports private Gists
-   - Better for individual module management
-   - Quick sharing via Gist URLs
-
-You can switch between these storage options in the app settings. The app will remember your preference for future saves.
+Visit: [Surge Module Manager](https://your-domain)
 
 ### Local Development
 
@@ -62,7 +27,7 @@ npm install
 ```
 
 2. Configure environment variables:
-Copy `.env.local.example` to `.env.local` and fill in the configuration
+   Copy `.env.local.example` to `.env.local` and fill in the configuration
 
 3. Run development server:
 ```bash
@@ -71,26 +36,115 @@ npm run dev
 
 ## Usage Guide
 
-1. **Authentication**
-   - Sign in with your GitHub account (required for remote mode)
-   - Local mode is available without authentication
+### 1. Basic Operations
 
-2. **Module Management**
-   - Import existing modules or create new ones
-   - Edit module configurations
-   - Add HTTP request or Cron type scripts
-   - Save changes (auto-sync with GitHub/Gist in remote mode)
+#### Local Mode
+- No login required, data stored in browser
+- Import/export module files
+- Direct module editing and management
 
-3. **Script Types**
-   - HTTP Request: Configure pattern and MITM domain
-   - Cron: Set pattern and timeout
+#### Remote Mode
+- GitHub account login required
+- Sync with GitHub Gist
+- Online sharing and collaboration
+
+### 2. Module Management
+
+#### Create New Module
+1. Fill in basic module information:
+   - Module name (required)
+   - Module description (optional)
+
+2. Add scripts:
+   - Click "Add Script" button
+   - Choose script type (HTTP or Cron)
+   - Fill in corresponding parameters
+
+#### Import Existing Module
+1. Click "Import Module" button in the top bar
+2. Select a .sgmodule file
+3. System will automatically parse and load the module content
+
+### 3. Script Configuration
+
+#### HTTP Type Script
+- **Required Parameters**:
+  - Name
+  - Type (http-request/http-response)
+  - URL pattern
+  - Script path
+- **Auto-added Parameters**:
+  - requires-body=1
+  - max-size=0
+  - script-update-interval=604800
+
+#### Cron Type Script
+- **Required Parameters**:
+  - Name
+  - Cron expression
+  - Script path
+- **Auto-added Parameters**:
+  - timeout=6000
+  - script-update-interval=604800
+
+### 4. Editing Feature
+
+1. View all scripts in the "Existing Scripts" section on the right
+2. Click the "Edit" button of a script
+3. The form on the left will be auto-filled with the script's information
+4. Click "Add" button after modification to save changes
+
+### 5. Export and Share
+
+- **Copy to Clipboard**: Click "Copy" button
+- **Download File**: Click "Download" button to save as .sgmodule file
+- **Remote Mode**: Direct save to GitHub Gist (login required)
+
+## Developer Guide
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `NEXTAUTH_URL` | Application deployment URL | `https://your-domain` |
+| `NEXTAUTH_SECRET` | NextAuth.js encryption key | Generate using `openssl rand -base64 32` or surf: https://generate-secret.vercel.app/32|
+| `GITHUB_ID` | GitHub OAuth App client ID | Get from GitHub developer settings |
+| `GITHUB_SECRET` | GitHub OAuth App client secret | Get from GitHub developer settings |
+
+### Project Structure
+
+```
+├── components/          # React components
+├── contexts/           # React contexts
+├── pages/             # Next.js pages
+├── public/            # Static assets
+└── styles/            # Style files
+```
 
 ## Important Notes
 
-- GitHub OAuth App requires appropriate scopes (repo, gist)
-- Ensure environment variables are correctly configured
-- Custom domain is recommended
-- All data in local mode is stored in the browser
+1. **Module Format**
+   - Ensure imported modules follow Surge module specifications
+   - File extension must be .sgmodule
+
+2. **Script Path**
+   - HTTPS links recommended
+   - Ensure scripts are accessible by Surge
+
+3. **Security**
+   - Remote mode requires GitHub authorization
+   - Local mode data is stored in browser only
+
+## FAQ
+
+Q: Why can't I import modules?
+A: Ensure file format is correct and it's a valid .sgmodule file
+
+Q: How to switch language?
+A: Click the language switch button in the top navigation bar
+
+Q: How to backup data?
+A: Export files in local mode, auto-save to GitHub in remote mode
 
 ## Contributing
 

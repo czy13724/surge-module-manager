@@ -25,14 +25,12 @@
 3. 在 Vercel 中导入项目：
    - 连接你的 GitHub 仓库
    - 设置环境变量：
-     ```
-     NEXTAUTH_URL=https://你的域名
-     # 使用以下命令生成密钥: openssl rand -base64 32
-     # 或者访问: https://generate-secret.vercel.app/32
-     NEXTAUTH_SECRET=生成的密钥
-     GITHUB_ID=GitHub OAuth App 的 Client ID
-     GITHUB_SECRET=GitHub OAuth App 的 Client Secret
-     ```
+     | 变量名 | 说明 | 示例 |
+     |--------|------|------|
+     | `NEXTAUTH_URL` | 应用部署的 URL | `https://你的域名` |
+     | `NEXTAUTH_SECRET` | NextAuth.js 加密密钥 | 使用 `openssl rand -base64 32` 生成或者访问: https://generate-secret.vercel.app/32 |
+     | `GITHUB_ID` | GitHub OAuth App 的客户端 ID | 从 GitHub 开发者设置获取 |
+     | `GITHUB_SECRET` | GitHub OAuth App 的客户端密钥 | 从 GitHub 开发者设置获取 |
 
 4. 部署完成后，访问你的 Vercel 域名即可使用
 
