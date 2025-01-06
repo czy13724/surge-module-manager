@@ -108,6 +108,56 @@ export default function LocalEditor() {
     };
   }, [saveConfig]);
 
+  const generateModuleContent = useCallback(() => {
+    const lines = [];
+    
+    // 添加模块名称和描述
+    lines.push(`#!name=${moduleName}`);
+    if (moduleDesc) {
+      lines.push(`#!desc=${moduleDesc}`);
+    }
+    lines.push('');  // 空行分隔
+
+    // 添加脚本
+    scripts.forEach(script => {
+      lines.push(`[Script]`);
+      lines.push(`${script.name} = type=${script.type},pattern=${script.pattern},script-path=${script.scriptPath}${
+        script.type.includes('http') ? `,mitm-domain=${script.mitmDomain},mitm-mode=${script.mitmMode}` : 
+        script.type === 'cron' ? `,timeout=${script.timeout}` : ''
+      }`);
+      lines.push('');  // 空行分隔
+    });
+
+    return lines.join('\n');
+  }, [scripts, moduleName, moduleDesc]);
+
+  const copyToClipboard = useCallback(async () => {
+    try {
+      const content = generateModuleContent();
+      await navigator.clipboard.writeText(content);
+      alert(t('copySuccess'));
+    } catch (error) {
+      alert(t('copyFailed'));
+    }
+  }, [generateModuleContent, t]);
+
+  const downloadModule = useCallback(() => {
+    try {
+      const content = generateModuleContent();
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${moduleName || 'surge-module'}.sgmodule`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert(t('downloadFailed'));
+    }
+  }, [generateModuleContent, moduleName, t]);
+
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50/70 pt-20">
       {/* 导入模块的文件输入（隐藏） */}
@@ -317,7 +367,7 @@ export default function LocalEditor() {
                               onClick={() => {}}
                               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all text-sm"
                             >
-                              <i className="ti ti-edit"></i> {t('editScript')}
+                              <i className="ti ti-edit"></i> {t('edit')}
                             </button>
                             <button
                               onClick={() => deleteScript(index)}
@@ -363,6 +413,20 @@ export default function LocalEditor() {
                         rows={2}
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
+                    </div>
+                    <div className="flex gap-2 pt-4">
+                      <button
+                        onClick={copyToClipboard}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-all text-sm flex items-center justify-center gap-1"
+                      >
+                        <i className="ti ti-clipboard"></i> {t('copyToClipboard')}
+                      </button>
+                      <button
+                        onClick={downloadModule}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-all text-sm flex items-center justify-center gap-1"
+                      >
+                        <i className="ti ti-download"></i> {t('download')}
+                      </button>
                     </div>
                   </div>
                 </div>
