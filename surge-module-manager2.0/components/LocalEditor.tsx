@@ -4,12 +4,11 @@ import { useTranslation } from '../hooks/useTranslation';
 interface Script {
   name: string;
   type: string;
-  httpPattern?: string;
-  cronPattern?: string;
-  timeout?: string;
+  pattern: string;
   scriptPath: string;
   mitmDomain?: string;
   mitmMode?: string;
+  timeout?: string;
 }
 
 export default function LocalEditor() {
@@ -51,11 +50,10 @@ export default function LocalEditor() {
       name: scriptName,
       type: scriptType,
       pattern: scriptType === 'http-request' ? httpPattern : cronPattern,
-      mitmDomain: scriptType === 'http-request' ? mitmDomain : '',
-      mitmMode: scriptType === 'http-request' ? mitmMode : '',
-      wakeSystem: scriptType === 'cron' ? wakeSystem : false,
-      timeout: scriptType === 'cron' ? timeout : '',
-      scriptPath: scriptPath,
+      mitmDomain: scriptType === 'http-request' ? mitmDomain : undefined,
+      mitmMode: scriptType === 'http-request' ? mitmMode : undefined,
+      timeout: scriptType === 'cron' ? timeout : undefined,
+      scriptPath,
     };
 
     setScripts((prev) => [...prev, newScript]);
