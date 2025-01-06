@@ -177,7 +177,7 @@ export default function LocalEditor() {
         className="min-h-full w-full"
       >
         {/* 主内容区域 */}
-        <div className="max-w-[1400px] mx-auto p-8">
+        <div className="max-w-[1400px] mx-auto px-8">
           <div className="grid grid-cols-12 gap-8">
             {/* 左侧：预添加脚本区 */}
             <div className="col-span-7">
