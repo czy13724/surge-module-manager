@@ -15,9 +15,10 @@ interface Gist {
 interface Props {
   onSelect: (gist: Gist) => void;
   onCreateNew: () => void;
+  selectedGist: Gist | null;
 }
 
-export default function GistSelector({ onSelect, onCreateNew }: Props) {
+export default function GistSelector({ onSelect, onCreateNew, selectedGist }: Props) {
   const [gists, setGists] = useState<Gist[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +60,9 @@ export default function GistSelector({ onSelect, onCreateNew }: Props) {
         {gists.map((gist) => (
           <div
             key={gist.id}
-            className="border rounded p-4 hover:bg-gray-50 cursor-pointer"
+            className={`border rounded p-4 hover:bg-gray-50 cursor-pointer ${
+              selectedGist?.id === gist.id ? 'bg-blue-100' : ''
+            }`}
             onClick={() => onSelect(gist)}
           >
             <h4 className="font-medium">{gist.description || '未命名配置'}</h4>
