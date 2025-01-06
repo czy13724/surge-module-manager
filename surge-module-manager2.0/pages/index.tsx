@@ -68,6 +68,7 @@ export default function Home() {
         gistId={selectedGist?.id}
         initialContent={selectedGist?.files?.['surge-module.sgmodule']?.content}
         onSave={handleSaveComplete}
+        onBack={handleBack}
       />
     );
   }

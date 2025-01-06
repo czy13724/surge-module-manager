@@ -11,6 +11,11 @@ export default function App({
     <SessionProvider session={session}>
       <LanguageProvider>
         <Component {...pageProps} />
+        <style jsx global>{`
+          body {
+            background: url('https://cdn.jsdelivr.net/gh/czy13724/czy13724.github.io@master/img/bg/image_16.jpg') center/cover fixed no-repeat;
+          }
+        `}</style>
       </LanguageProvider>
     </SessionProvider>
   );

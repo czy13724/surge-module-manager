@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 import { useTranslation } from '../contexts/LanguageContext';
-import { useRouter } from 'next/router';
 
 interface Script {
   name: string;
@@ -17,10 +16,10 @@ interface Props {
   gistId?: string;
   initialContent?: string;
   onSave: () => void;
+  onBack: () => void;
 }
 
-export default function ModuleEditor({ gistId, initialContent, onSave }: Props) {
-  const router = useRouter();
+export default function ModuleEditor({ gistId, initialContent, onSave, onBack }: Props) {
   const [scripts, setScripts] = useState<Script[]>([]);
   const [moduleName, setModuleName] = useState('');
   const [moduleDesc, setModuleDesc] = useState('');
@@ -137,7 +136,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave }: Props) 
       {/* 添加返回按钮和预览按钮 */}
       <div className="container mx-auto px-8 pb-4 flex justify-between items-center">
         <button
-          onClick={() => router.push('/')}
+          onClick={onBack}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <i className="ti ti-arrow-left"></i> {t('back')}
