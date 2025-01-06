@@ -129,7 +129,24 @@ export default function LocalEditor() {
       .catch(() => alert(t('copyFailed')));
   }, [generateConfig, t]);
 
-  // 添加保存事件监听器
+  useEffect(() => {
+    const handleImport = () => {
+      fileInputRef.current?.click();
+    };
+
+    window.addEventListener('triggerImport', handleImport);
+    return () => {
+      window.removeEventListener('triggerImport', handleImport);
+    };
+  }, []);
+
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('config');
+    if (savedConfig) {
+      // 加载已保存的配置
+    }
+  }, []);
+
   useEffect(() => {
     const handleSaveConfig = () => {
       saveConfig();

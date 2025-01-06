@@ -39,8 +39,9 @@ export default function Navbar({
             </Link>
           </div>
 
-          {/* Center: Actions */}
+          {/* Right: All Actions */}
           <div className="flex items-center space-x-4">
+            {/* Import Button (Local Mode Only) */}
             {mode === 'local' && (
               <button
                 onClick={onImportClick}
@@ -50,10 +51,7 @@ export default function Navbar({
                 <span>{t('importModule')}</span>
               </button>
             )}
-          </div>
 
-          {/* Right: Mode Switch & Auth */}
-          <div className="flex items-center space-x-4">
             {/* Mode Switch */}
             <div className="flex rounded-lg overflow-hidden">
               <button

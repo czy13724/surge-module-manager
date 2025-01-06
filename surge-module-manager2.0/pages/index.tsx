@@ -48,11 +48,9 @@ export default function Home() {
   };
 
   const handleImportClick = () => {
-    // 触发 LocalEditor 中的文件输入
-    const fileInput = document.querySelector('#fileInput') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
-    }
+    // 通过事件触发导入
+    const importEvent = new CustomEvent('triggerImport');
+    window.dispatchEvent(importEvent);
   };
 
   const handleModeSwitch = (newMode: 'local' | 'remote') => {
