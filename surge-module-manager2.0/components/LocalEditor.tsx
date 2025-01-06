@@ -44,35 +44,44 @@ export default function LocalEditor() {
 
     try {
       const content = await file.text();
+      
       // 解析模块内容
-      const nameMatch = content.match(/#!name\s+(.+)/);
-      const descMatch = content.match(/#!desc\s+(.+)/);
-      const scriptSection = content.match(/\[Script\]\s*([\s\S]*?)(?=\[|$)/);
+      const nameMatch = content.match(/#!name=(.+)/);
+      const descMatch = content.match(/#!desc=(.+)/);
+      const scriptSection = content.match(/\[Script\]([\s\S]*?)(?=\[|$)/);
 
       if (scriptSection) {
-        const scripts = scriptSection[1].trim().split('\n');
+        const scripts = scriptSection[1].trim().split('\n').filter(line => line.trim());
         const parsedScripts: Script[] = scripts.map(script => {
-          const [name, params] = script.split('=').map(s => s.trim());
-          const paramMap = new Map();
-          params.split(',').forEach(param => {
-            const [key, value] = param.split('=').map(s => s.trim());
-            paramMap.set(key, value);
-          });
+          const [name, ...paramParts] = script.split('=').map(s => s.trim());
+          const params = paramParts.join('='); // 重新组合可能包含 = 的部分
 
-          if (paramMap.get('type').includes('http')) {
+          const paramMap = new Map();
+          // 使用正则表达式匹配键值对，考虑到值可能包含逗号
+          const matches = params.match(/(\w+(-\w+)*)=([^,]+)/g);
+          if (matches) {
+            matches.forEach(match => {
+              const [key, ...valueParts] = match.split('=');
+              const value = valueParts.join('='); // 重新组合可能包含 = 的值
+              paramMap.set(key.trim(), value.trim());
+            });
+          }
+
+          const type = paramMap.get('type') || '';
+          if (type.includes('http')) {
             return {
               name,
-              type: paramMap.get('type'),
-              pattern: paramMap.get('pattern')?.replace(/"/g, '') || '',
+              type,
+              pattern: (paramMap.get('pattern') || '').replace(/"/g, ''),
               scriptPath: paramMap.get('script-path') || '',
-              mitmDomain: paramMap.get('insert-body') || paramMap.get('response-body') || '',
-              mitmMode: paramMap.has('insert-body') ? 'insert' : 'response'
+              mitmDomain: paramMap.get('requires-body') || '',
+              mitmMode: type.includes('response') ? 'response' : 'request'
             };
           } else {
             return {
               name,
-              type: paramMap.get('type'),
-              pattern: paramMap.get('cronexp')?.replace(/"/g, '') || '',
+              type,
+              pattern: (paramMap.get('cronexp') || '').replace(/"/g, ''),
               scriptPath: paramMap.get('script-path') || '',
               timeout: paramMap.get('timeout')
             };
@@ -144,16 +153,24 @@ export default function LocalEditor() {
   }, []);
 
   const generateConfig = useCallback(() => {
-    const header = `#!name=${moduleName}\n#!desc=${moduleDesc}\n\n[Script]\n`;
-    const scriptConfigs = scripts.map(script => {
-      if (script.type === 'http-request') {
-        return `${script.name} = type=http-request,pattern=${script.pattern}${script.mitmDomain ? `,domain=${script.mitmDomain}` : ''}${script.mitmMode ? `,mode=${script.mitmMode}` : ''},script-path=${script.scriptPath}`;
-      } else {
-        return `${script.name} = type=cron,pattern=${script.pattern}${script.timeout ? `,timeout=${script.timeout}` : ''},script-path=${script.scriptPath}`;
-      }
-    }).join('\n');
+    let config = `#!name=${moduleName}\n`;
+    config += `#!desc=${moduleDesc}\n\n`;
+    config += '[Script]\n';
     
-    return `${header}${scriptConfigs}`;
+    scripts.forEach(script => {
+      if (script.type.includes('http')) {
+        config += `${script.name} = type=${script.type},pattern=${script.pattern},requires-body=1,max-size=0,script-path=${script.scriptPath},script-update-interval=604800`;
+        if (script.mitmDomain) {
+          config += `,${script.mitmMode}-body=${script.mitmDomain}`;
+        }
+      } else {
+        // cron 类型
+        config += `${script.name} = type=cron,cronexp=${script.pattern},script-path=${script.scriptPath},script-update-interval=604800,timeout=6000`;
+      }
+      config += '\n';
+    });
+    
+    return config;
   }, [moduleName, moduleDesc, scripts]);
 
   const handleDownload = useCallback(() => {
