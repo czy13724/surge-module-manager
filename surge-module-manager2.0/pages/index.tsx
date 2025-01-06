@@ -151,12 +151,12 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 w-full bg-black/50 backdrop-blur-sm text-white text-center py-4">
+      <footer className="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-sm text-center py-4">
         <div className="space-y-1">
           <div>
-            Powered by <a href="https://github.com/czy13724" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300">Levi</a>
+            Powered by <a href="https://github.com/czy13724" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:text-indigo-600">Levi</a>
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-500">
             Copyright &copy; {new Date().getFullYear()} Levi. All rights reserved.
           </div>
         </div>
