@@ -29,6 +29,7 @@ export default function LocalEditor() {
   const [wakeSystem, setWakeSystem] = useState(false);
   const [timeout, setTimeout] = useState('');
   const [scriptPath, setScriptPath] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -101,39 +102,56 @@ export default function LocalEditor() {
     event.target.value = '';
   };
 
+  const handleEdit = (index: number) => {
+    const script = scripts[index];
+    setScriptName(script.name);
+    setScriptType(script.type);
+    if (script.type.includes('http')) {
+      setHttpPattern(script.pattern);
+      setMitmDomain(script.mitmDomain || '');
+      setMitmMode(script.mitmMode || 'request');
+    } else {
+      setCronPattern(script.pattern);
+      setTimeout(script.timeout || '6000');
+    }
+    setScriptPath(script.scriptPath);
+    setEditingIndex(index);
+  };
+
   const addScript = useCallback(() => {
     const newScript: Script = {
       name: scriptName,
       type: scriptType,
-      pattern: scriptType === 'http-request' ? httpPattern : cronPattern,
-      mitmDomain: scriptType === 'http-request' ? mitmDomain : undefined,
-      mitmMode: scriptType === 'http-request' ? mitmMode : undefined,
-      timeout: scriptType === 'cron' ? timeout : undefined,
+      pattern: scriptType.includes('http') ? httpPattern : cronPattern,
       scriptPath,
+      mitmDomain: scriptType.includes('http') ? mitmDomain : undefined,
+      mitmMode: scriptType.includes('http') ? mitmMode : undefined,
+      timeout: scriptType === 'cron' ? timeout : undefined
     };
 
-    setScripts((prev) => [...prev, newScript]);
+    if (editingIndex !== null) {
+      // 编辑现有脚本
+      setScripts(prev => {
+        const newScripts = [...prev];
+        newScripts[editingIndex] = newScript;
+        return newScripts;
+      });
+      setEditingIndex(null);
+    } else {
+      // 添加新脚本
+      setScripts(prev => [...prev, newScript]);
+    }
 
     // 重置表单
     setScriptName('');
+    setScriptType('http-request');
     setHttpPattern('');
     setMitmDomain('');
-    setMitmMode('insert');
+    setMitmMode('request');
     setCronPattern('');
-    setWakeSystem(false);
-    setTimeout('');
+    setTimeout('6000');
     setScriptPath('');
-  }, [
-    scriptName,
-    scriptType,
-    httpPattern,
-    mitmDomain,
-    mitmMode,
-    cronPattern,
-    wakeSystem,
-    timeout,
-    scriptPath,
-  ]);
+  }, [scriptName, scriptType, httpPattern, cronPattern, scriptPath, mitmDomain, mitmMode, timeout, editingIndex]);
 
   const deleteScript = useCallback((index: number) => {
     setScripts((prev) => prev.filter((_, i) => i !== index));
@@ -428,9 +446,7 @@ export default function LocalEditor() {
                           </div>
                           <div className="mt-4 flex gap-2">
                             <button
-                              onClick={() => {
-                                // Edit script logic
-                              }}
+                              onClick={() => handleEdit(index)}
                               className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-all text-sm"
                             >
                               <i className="ti ti-edit"></i> {t('editScript')}
