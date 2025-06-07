@@ -1,6 +1,6 @@
 # Surge Module Manager - Deployment Guide
 
-> Looking for the Chinese version? [Click here to view 中文文档](./README.zh.md)
+> Looking for the Chinese version? [Click here to view 中文文档](./readme_cn.md)
 >
 > ![Surge Module Manager UI Preview](shows_en.png)
 
@@ -94,9 +94,7 @@ The remote mode needs to be done with the help of the server, which is not frien
 
 ---
 
-Looking for the Chinese version? [点击查看中文文档](./README.zh.md)
-
-](readme_cn.md)
+Looking for the Chinese version? [点击查看中文文档](./readme_cn.md)
 
 ---
 

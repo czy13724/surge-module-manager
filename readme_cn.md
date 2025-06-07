@@ -1,6 +1,6 @@
 # Surge 模块管理器 - 部署指南
 
-> Looking for the English version? [Click here for English version](./README.md)
+> Looking for the English version? [Click here for English version](./readme.md)
 >
 > ![Surge Module Manager 界面预览](shows_cn.png)
 
@@ -88,4 +88,4 @@ npm start
 
 ---
 
-English version available: [Click here for English version](./README.md)
+English version available: [Click here for English version](./readme.md)
