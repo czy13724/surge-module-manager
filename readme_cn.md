@@ -1,5 +1,7 @@
 # Surge 模块管理器 - 部署指南
 
+本项目因没有服务器无法对界面内容产生的bug修复，请本地运行。
+
 > Looking for the English version? [Click here for English version](./readme.md)
 >
 > ![Surge Module Manager 界面预览](shows_cn.png)
