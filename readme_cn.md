@@ -2,6 +2,7 @@
 ---
 本文新增Surge带参数版的单一脚本模块生成器
 * Surge 单一模块生成器(带参数版)：
+
  [链接1](https://surge-argu.levifree.qzz.io);
  [链接2](https://surge-argu.levifree.dpdns.org);
  [链接3](https://surge-argu.levifree.news);
