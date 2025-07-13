@@ -1,5 +1,12 @@
 # Surge 模块管理器 - 部署指南
-
+---
+本文新增Surge带参数版的单一脚本模块生成器
+* Surge 单一模块生成器(带参数版)：
+ [链接1](https://surge-argu.levifree.qzz.io);
+ [链接2](https://surge-argu.levifree.dpdns.org);
+ [链接3](https://surge-argu.levifree.news);
+ [工具使用指南](https://github.com/czy13724/Surge/blob/main/Tutorials/surge_argu_moduler.md)
+---
 本项目因没有服务器无法对界面内容产生的bug修复，请本地运行。
 
 > Looking for the English version? [Click here for English version](./readme.md)
