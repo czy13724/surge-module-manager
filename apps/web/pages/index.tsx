@@ -66,6 +66,18 @@ export default function Home() {
     setIsEditing(false);
   };
 
+  const getSelectedFile = () => {
+    if (!selectedGist?.files) return null;
+    const files = Object.values(selectedGist.files) as Array<{ filename: string; raw_url: string; content?: string }>;
+    if (!files.length) return null;
+    return (
+      files.find((file) => file.filename.toLowerCase().endsWith('.sgmodule')) ||
+      files[0]
+    );
+  };
+
+  const selectedFile = getSelectedFile();
+
   if (isEditing) {
     return mode === 'local' ? (
       <div className="pt-20">
@@ -75,7 +87,9 @@ export default function Home() {
       <div className="pt-20">
         <ModuleEditor
           gistId={selectedGist?.id}
-          initialContent={selectedGist?.files?.['surge-module.sgmodule']?.content}
+          initialContent={selectedFile?.content}
+          initialContentUrl={selectedFile?.raw_url}
+          gistFilename={selectedFile?.filename}
           onSave={handleSaveComplete}
           onBack={handleBack}
         />

@@ -6,11 +6,20 @@ import { buildModuleContent, parseModuleContent, ScriptItem, ScriptType } from '
 interface Props {
   gistId?: string;
   initialContent?: string;
+  initialContentUrl?: string;
+  gistFilename?: string;
   onSave: () => void;
   onBack: () => void;
 }
 
-export default function ModuleEditor({ gistId, initialContent, onSave, onBack }: Props) {
+export default function ModuleEditor({
+  gistId,
+  initialContent,
+  initialContentUrl,
+  gistFilename,
+  onSave,
+  onBack
+}: Props) {
   const [scripts, setScripts] = useState<ScriptItem[]>([]);
   const [moduleName, setModuleName] = useState('');
   const [moduleAuthor, setModuleAuthor] = useState('');
@@ -35,15 +44,45 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!initialContent) return;
-    const parsed = parseModuleContent(initialContent);
-    setModuleName(parsed.name);
-    setModuleAuthor(parsed.author || '');
-    setModuleDesc(parsed.desc);
-    setModuleIcon(parsed.icon || '');
-    setModuleCategory(parsed.category || '');
-    setScripts(parsed.scripts);
-  }, [initialContent]);
+    let cancelled = false;
+
+    const applyContent = (content: string) => {
+      const parsed = parseModuleContent(content);
+      setModuleName(parsed.name);
+      setModuleAuthor(parsed.author || '');
+      setModuleDesc(parsed.desc);
+      setModuleIcon(parsed.icon || '');
+      setModuleCategory(parsed.category || '');
+      setScripts(parsed.scripts);
+    };
+
+    if (initialContent) {
+      applyContent(initialContent);
+      return;
+    }
+
+    if (!initialContentUrl) return;
+
+    (async () => {
+      try {
+        const response = await axios.get(initialContentUrl);
+        if (cancelled) return;
+        const content =
+          typeof response.data === 'string'
+            ? response.data
+            : response.data?.content || '';
+        if (content) {
+          applyContent(content);
+        }
+      } catch (error) {
+        console.error('Failed to load gist content:', error);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialContent, initialContentUrl]);
 
   const handleEdit = (index: number) => {
     const script = scripts[index];
@@ -135,7 +174,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
         // 更新现有的 Gist
         await axios.put('/api/github/gist', {
           gist_id: gistId,
-          filename: 'surge-module.sgmodule',
+          filename: gistFilename || 'surge-module.sgmodule',
           content: moduleContent,
         });
       } else {
