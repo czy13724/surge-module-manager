@@ -68,14 +68,18 @@ export default function Home() {
 
   if (isEditing) {
     return mode === 'local' ? (
-      <LocalEditor />
+      <div className="pt-20">
+        <LocalEditor />
+      </div>
     ) : (
-      <ModuleEditor
-        gistId={selectedGist?.id}
-        initialContent={selectedGist?.files?.['surge-module.sgmodule']?.content}
-        onSave={handleSaveComplete}
-        onBack={handleBack}
-      />
+      <div className="pt-20">
+        <ModuleEditor
+          gistId={selectedGist?.id}
+          initialContent={selectedGist?.files?.['surge-module.sgmodule']?.content}
+          onSave={handleSaveComplete}
+          onBack={handleBack}
+        />
+      </div>
     );
   }
 
