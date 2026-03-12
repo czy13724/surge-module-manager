@@ -13,6 +13,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     auth: accessToken
   });
 
+  if (req.method === 'GET') {
+    try {
+      const { gist_id, filename } = req.query;
+      if (!gist_id || typeof gist_id !== 'string') {
+        return res.status(400).json({ error: 'Missing gist_id' });
+      }
+
+      const gistResponse = await octokit.gists.get({
+        gist_id,
+      });
+
+      const files = gistResponse.data.files || {};
+      let file = typeof filename === 'string' ? files[filename] : undefined;
+      if (!file) {
+        const fileList = Object.values(files);
+        file =
+          fileList.find((item) => item.filename?.toLowerCase().endsWith('.sgmodule')) ||
+          fileList[0];
+      }
+
+      if (!file) {
+        return res.status(404).json({ error: 'No files found in gist' });
+      }
+
+      let content = file.content || '';
+      if (!content && file.raw_url) {
+        const rawResponse = await fetch(file.raw_url);
+        if (rawResponse.ok) {
+          content = await rawResponse.text();
+        }
+      }
+
+      if (!content) {
+        return res.status(404).json({ error: 'Gist file is empty or unavailable' });
+      }
+
+      return res.status(200).json({
+        content,
+        filename: file.filename,
+      });
+    } catch (error: any) {
+      console.error('Error loading gist:', error);
+      return res.status(error.status || 500).json({
+        error: 'Failed to load gist',
+        details: error.message,
+      });
+    }
+  }
+
   if (req.method === 'PUT' || req.method === 'PATCH') {
     try {
       const { gist_id, content } = req.body;

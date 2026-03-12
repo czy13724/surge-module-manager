@@ -61,18 +61,34 @@ export default function ModuleEditor({
       return;
     }
 
-    if (!initialContentUrl) return;
+    if (!gistId && !initialContentUrl) return;
 
     (async () => {
       try {
-        const response = await axios.get(initialContentUrl);
-        if (cancelled) return;
-        const content =
-          typeof response.data === 'string'
-            ? response.data
-            : response.data?.content || '';
-        if (content) {
-          applyContent(content);
+        if (gistId) {
+          const response = await axios.get('/api/github/gist', {
+            params: {
+              gist_id: gistId,
+              filename: gistFilename,
+            },
+          });
+          if (cancelled) return;
+          if (response.data?.content) {
+            applyContent(response.data.content);
+            return;
+          }
+        }
+
+        if (initialContentUrl) {
+          const response = await axios.get(initialContentUrl);
+          if (cancelled) return;
+          const content =
+            typeof response.data === 'string'
+              ? response.data
+              : response.data?.content || '';
+          if (content) {
+            applyContent(content);
+          }
         }
       } catch (error) {
         console.error('Failed to load gist content:', error);
@@ -82,7 +98,7 @@ export default function ModuleEditor({
     return () => {
       cancelled = true;
     };
-  }, [initialContent, initialContentUrl]);
+  }, [initialContent, initialContentUrl, gistId, gistFilename]);
 
   const handleEdit = (index: number) => {
     const script = scripts[index];
