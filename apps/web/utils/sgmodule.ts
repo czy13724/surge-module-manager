@@ -142,6 +142,7 @@ export function buildModuleContent(
   scripts: ScriptItem[],
   meta?: { author?: string; icon?: string; category?: string }
 ): string {
+  const mitmSeen = new Set<string>();
   let content = `#!name=${name || 'Untitled Module'}\n`;
   if (meta?.author) content += `#!author=${meta.author}\n`;
   content += `#!desc=${desc || ''}\n`;
@@ -161,7 +162,11 @@ export function buildModuleContent(
           : '-1';
         content += `,script-update-interval=${intervalValue}`;
         if (script.mitmDomain && script.mitmMode) {
-          content += `,${script.mitmMode}-body=${script.mitmDomain}`;
+          const key = `${script.mitmMode}:${script.mitmDomain}`;
+          if (!mitmSeen.has(key)) {
+            content += `,${script.mitmMode}-body=${script.mitmDomain}`;
+            mitmSeen.add(key);
+          }
         }
       } else {
         content += `,cronexp=${script.pattern}`;
