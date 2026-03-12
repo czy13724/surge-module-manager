@@ -439,7 +439,7 @@ export default function LocalEditor() {
             <div className="col-span-5">
               <div className="grid grid-rows-2 gap-8">
                 {/* 已存在脚本区 */}
-                <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-6 overflow-auto">
+                <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-6 max-h-[calc(100vh-20rem)] overflow-auto">
                   <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800 sticky top-0 bg-white/70 backdrop-blur-sm py-2">
                     <i className="ti ti-list"></i> {t('existingScriptsSection')}
                   </h2>
