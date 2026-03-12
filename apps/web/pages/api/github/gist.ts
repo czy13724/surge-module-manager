@@ -27,8 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           gist_id,
         });
         
-        // Check if the gist is accessible and belongs to the user
-        if (!gistResponse.data || gistResponse.data.owner?.login !== session.user?.name) {
+        // Ensure the gist is accessible
+        if (!gistResponse.data) {
           return res.status(403).json({ 
             error: 'You do not have permission to access this gist'
           });
