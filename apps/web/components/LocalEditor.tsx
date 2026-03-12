@@ -246,7 +246,7 @@ export default function LocalEditor() {
         className="min-h-full"
       >
         {/* 主内容区域 */}
-        <div className="container mx-auto p-8">
+        <div className="container mx-auto p-8 pb-24">
           <div className="grid grid-cols-12 gap-8">
             {/* 左侧：预添加脚本区 */}
             <div className="col-span-7">
@@ -437,7 +437,7 @@ export default function LocalEditor() {
 
             {/* 右侧：已存在脚本区和编辑模块详情 */}
             <div className="col-span-5">
-              <div className="grid grid-rows-2 gap-8 h-[calc(100vh-8rem)] sticky top-24">
+              <div className="grid grid-rows-2 gap-8">
                 {/* 已存在脚本区 */}
                 <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-6 overflow-auto">
                   <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800 sticky top-0 bg-white/70 backdrop-blur-sm py-2">

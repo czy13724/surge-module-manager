@@ -174,7 +174,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
       </div>
 
       {showPreview ? (
-        <div className="container mx-auto p-8">
+        <div className="container mx-auto p-8 pb-24">
           <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-8">
             <h2 className="text-2xl font-semibold mb-8 flex items-center gap-2 text-gray-800">
               <i className="ti ti-file-text"></i> {t('preview')}
@@ -388,7 +388,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
 
             {/* 右侧：已存在脚本区和编辑模块详情 */}
             <div className="col-span-5">
-              <div className="grid grid-rows-2 gap-8 h-[calc(100vh-8rem)] sticky top-24">
+              <div className="grid grid-rows-2 gap-8">
                 {/* 已存在脚本区 */}
                 <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-6 overflow-auto">
                   <h2 className="text-xl font-semibold mb-6 flex items-center gap-2 text-gray-800 sticky top-0 bg-white/70 backdrop-blur-sm py-2">
