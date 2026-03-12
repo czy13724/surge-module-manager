@@ -23,7 +23,7 @@ export default function LocalEditor() {
   const [wakeSystem, setWakeSystem] = useState(false);
   const [timeout, setTimeout] = useState('');
   const [updateIntervalEnabled, setUpdateIntervalEnabled] = useState(false);
-  const [updateInterval, setUpdateInterval] = useState('0');
+  const [updateInterval, setUpdateInterval] = useState('-1');
   const [scriptPath, setScriptPath] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -83,13 +83,13 @@ export default function LocalEditor() {
       setMitmDomain(script.mitmDomain || '');
       setMitmMode(script.mitmMode || 'insert');
       setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
-      setUpdateInterval(script.updateInterval || '0');
+      setUpdateInterval(script.updateInterval || '-1');
     } else {
       setCronPattern(script.pattern);
       setTimeout(script.timeout || '');
       setWakeSystem(Boolean(script.wakeSystem));
       setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
-      setUpdateInterval(script.updateInterval || '0');
+      setUpdateInterval(script.updateInterval || '-1');
     }
     setScriptPath(script.scriptPath);
     setEditingIndex(index);
@@ -133,7 +133,7 @@ export default function LocalEditor() {
     setTimeout('');
     setWakeSystem(false);
     setUpdateIntervalEnabled(false);
-    setUpdateInterval('0');
+    setUpdateInterval('-1');
     setScriptPath('');
   }, [scriptName, scriptType, httpPattern, cronPattern, scriptPath, mitmDomain, mitmMode, timeout, editingIndex, wakeSystem, updateIntervalEnabled, updateInterval]);
 
@@ -325,7 +325,12 @@ export default function LocalEditor() {
                         <input
                           type="checkbox"
                           checked={updateIntervalEnabled}
-                          onChange={(e) => setUpdateIntervalEnabled(e.target.checked)}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setUpdateIntervalEnabled(checked);
+                            if (!checked) setUpdateInterval('-1');
+                            if (checked && updateInterval === '-1') setUpdateInterval('0');
+                          }}
                           className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
                         <label className="ml-3 text-lg text-gray-700">
@@ -388,9 +393,14 @@ export default function LocalEditor() {
                           <input
                             type="checkbox"
                             checked={updateIntervalEnabled}
-                            onChange={(e) => setUpdateIntervalEnabled(e.target.checked)}
-                            className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          />
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setUpdateIntervalEnabled(checked);
+                            if (!checked) setUpdateInterval('-1');
+                            if (checked && updateInterval === '-1') setUpdateInterval('0');
+                          }}
+                          className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
                           <label className="ml-3 text-lg text-gray-700">
                             {t('updateIntervalEnable')}
                           </label>
