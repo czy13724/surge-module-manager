@@ -140,7 +140,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
         });
       } else {
         // 创建新的 Gist
-        await axios.post('/api/github/gist', {
+        await axios.post('/api/github/gists', {
           filename: 'surge-module.sgmodule',
           content: moduleContent,
           description: moduleDesc || 'Surge Module',
