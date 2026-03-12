@@ -29,8 +29,8 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
   const [cronPattern, setCronPattern] = useState('');
   const [wakeSystem, setWakeSystem] = useState(false);
   const [timeout, setTimeout] = useState('');
-  const [updateIntervalEnabled, setUpdateIntervalEnabled] = useState(false);
-  const [updateInterval, setUpdateInterval] = useState('-1');
+  const [updateIntervalEnabled, setUpdateIntervalEnabled] = useState(true);
+  const [updateInterval, setUpdateInterval] = useState('86400');
   const [scriptPath, setScriptPath] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -54,13 +54,13 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
       setMitmDomain(script.mitmDomain || '');
       setMitmMode(script.mitmMode || 'insert');
       setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
-      setUpdateInterval(script.updateInterval || '-1');
+      setUpdateInterval(script.updateInterval || '86400');
     } else {
       setCronPattern(script.pattern);
       setTimeout(script.timeout || '');
       setWakeSystem(Boolean(script.wakeSystem));
       setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
-      setUpdateInterval(script.updateInterval || '-1');
+      setUpdateInterval(script.updateInterval || '86400');
     }
     setScriptPath(script.scriptPath);
     setEditingIndex(index);
@@ -100,8 +100,8 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
     setCronPattern('');
     setWakeSystem(false);
     setTimeout('');
-    setUpdateIntervalEnabled(false);
-    setUpdateInterval('-1');
+    setUpdateIntervalEnabled(true);
+    setUpdateInterval('86400');
     setScriptPath('');
   }, [
     scriptName,
@@ -280,7 +280,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
                             const checked = e.target.checked;
                             setUpdateIntervalEnabled(checked);
                             if (!checked) setUpdateInterval('-1');
-                            if (checked && updateInterval === '-1') setUpdateInterval('0');
+                            if (checked && updateInterval === '-1') setUpdateInterval('86400');
                           }}
                           className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
@@ -348,7 +348,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
                             const checked = e.target.checked;
                             setUpdateIntervalEnabled(checked);
                             if (!checked) setUpdateInterval('-1');
-                            if (checked && updateInterval === '-1') setUpdateInterval('0');
+                            if (checked && updateInterval === '-1') setUpdateInterval('86400');
                           }}
                           className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
