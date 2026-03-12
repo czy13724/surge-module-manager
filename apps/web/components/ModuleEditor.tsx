@@ -224,7 +224,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
                     </label>
                     <select
                       value={scriptType}
-                      onChange={(e) => setScriptType(e.target.value)}
+                      onChange={(e) => setScriptType(e.target.value as ScriptType)}
                       className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                       <option value="http-request">HTTP Request</option>
@@ -265,7 +265,7 @@ export default function ModuleEditor({ gistId, initialContent, onSave, onBack }:
                         </label>
                         <select
                           value={mitmMode}
-                          onChange={(e) => setMitmMode(e.target.value)}
+                          onChange={(e) => setMitmMode(e.target.value as 'insert' | 'append')}
                           className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         >
                           <option value="insert">{t('mitmInsert')}</option>
