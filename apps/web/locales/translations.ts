@@ -29,6 +29,8 @@ export const translations = {
     cronPatternPlaceholder: '例如: 0 8 * * * (每天早上8点)',
     wakeSystem: '唤醒系统',
     timeout: '超时设置',
+    updateInterval: '更新间隔',
+    updateIntervalEnable: '启用更新间隔',
     scriptPath: '脚本路径',
     scriptPathPlaceholder: '远程URL或本地路径',
     addScript: '添加脚本',
@@ -48,6 +50,12 @@ export const translations = {
     editDetailsSection: '编辑模块详情',
     moduleName: '模块名称',
     moduleDesc: '模块描述',
+    moduleAuthor: '作者',
+    moduleIcon: '图标 URL',
+    moduleCategory: '分类',
+    moduleAuthorPlaceholder: '例如: Levi',
+    moduleIconPlaceholder: '例如: https://example.com/icon.png',
+    moduleCategoryPlaceholder: '例如: GetCookie',
     noScriptsMessage: '还没有添加任何脚本',
 
     // 保存相关
@@ -106,6 +114,8 @@ export const translations = {
     cronPatternPlaceholder: 'e.g., 0 8 * * * (8 AM daily)',
     wakeSystem: 'Wake System',
     timeout: 'Timeout',
+    updateInterval: 'Update Interval',
+    updateIntervalEnable: 'Enable Update Interval',
     scriptPath: 'Script Path',
     scriptPathPlaceholder: 'Remote URL or local path',
     addScript: 'Add Script',
@@ -125,6 +135,12 @@ export const translations = {
     editDetailsSection: 'Edit Module Details',
     moduleName: 'Module Name',
     moduleDesc: 'Module Description',
+    moduleAuthor: 'Author',
+    moduleIcon: 'Icon URL',
+    moduleCategory: 'Category',
+    moduleAuthorPlaceholder: 'e.g. Levi',
+    moduleIconPlaceholder: 'e.g. https://example.com/icon.png',
+    moduleCategoryPlaceholder: 'e.g. GetCookie',
     noScriptsMessage: 'No scripts added yet',
 
     // Save Related

@@ -27,7 +27,7 @@ npm install
 ```
 
 2. Configure environment variables:
-   Copy `.env.local.example` to `.env.local` and fill in the configuration
+   Copy `.env.example` to `.env.local` and fill in the configuration
 
 3. Run development server:
 ```bash

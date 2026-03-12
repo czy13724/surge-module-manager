@@ -60,7 +60,7 @@ npm install
 ```
 
 2. 配置环境变量：
-复制 `.env.local.example` 为 `.env.local` 并填写配置
+复制 `.env.example` 为 `.env.local` 并填写配置
 
 3. 运行开发服务器：
 ```bash

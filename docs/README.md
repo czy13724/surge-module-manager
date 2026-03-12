@@ -1,8 +1,8 @@
 # 📦 Surge Module Manager - Deployment Guide
 
-> 🌐 Looking for the Chinese version? [**点击查看中文文档**](./readme_cn.md)
+> 🌐 Looking for the Chinese version? [**点击查看中文文档**](./README_CN.md)
 >
-> ![Surge Module Manager UI Preview](shows_en.png)
+> ![Surge Module Manager UI Preview](./assets/shows_en.png)
 
 ## 📖 Introduction
 
@@ -16,7 +16,7 @@
 
 ```bash
 git clone https://github.com/czy13724/surge-module-manager.git
-cd surge-module-manager
+cd surge-module-manager/apps/web
 ```
 
 ### 2. Install Dependencies

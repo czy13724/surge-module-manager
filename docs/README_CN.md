@@ -1,8 +1,8 @@
 # 📦 Surge 模块管理器 - 部署指南
 
-> 🌐 Looking for the English version? [**点击查看英文文档**](./readme.md)
+> 🌐 Looking for the English version? [**点击查看英文文档**](./README.md)
 >
-> ![Surge Module Manager 界面预览](shows_cn.png)
+> ![Surge Module Manager 界面预览](./assets/shows_cn.png)
 
 ## 📢 特别说明 / Updates
 
@@ -26,7 +26,7 @@
 
 ```bash
 git clone https://github.com/czy13724/surge-module-manager.git
-cd surge-module-manager
+cd surge-module-manager/apps/web
 ```
 
 ### 2. 安装依赖

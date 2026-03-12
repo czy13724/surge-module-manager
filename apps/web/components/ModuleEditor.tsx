@@ -1,106 +1,49 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 import { useTranslation } from '../contexts/LanguageContext';
+import { buildModuleContent, parseModuleContent, ScriptItem, ScriptType } from '../utils/sgmodule';
 
-interface Script {
-  name: string;
-  type: string;
-  pattern: string;
-  scriptPath: string;
-  mitmDomain?: string;
-  mitmMode?: string;
-  timeout?: string;
+interface Props {
+  gistId?: string;
+  initialContent?: string;
+  onSave: () => void;
+  onBack: () => void;
 }
 
-export default function LocalEditor() {
-  const [scripts, setScripts] = useState<Script[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+export default function ModuleEditor({ gistId, initialContent, onSave, onBack }: Props) {
+  const [scripts, setScripts] = useState<ScriptItem[]>([]);
   const [moduleName, setModuleName] = useState('');
+  const [moduleAuthor, setModuleAuthor] = useState('');
   const [moduleDesc, setModuleDesc] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [moduleIcon, setModuleIcon] = useState('');
+  const [moduleCategory, setModuleCategory] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   const { t } = useTranslation();
 
   // 预添加脚本区域的状态
   const [scriptName, setScriptName] = useState('');
-  const [scriptType, setScriptType] = useState('http-request');
+  const [scriptType, setScriptType] = useState<ScriptType>('http-request');
   const [httpPattern, setHttpPattern] = useState('');
   const [mitmDomain, setMitmDomain] = useState('');
-  const [mitmMode, setMitmMode] = useState('insert');
+  const [mitmMode, setMitmMode] = useState<'insert' | 'append'>('insert');
   const [cronPattern, setCronPattern] = useState('');
   const [wakeSystem, setWakeSystem] = useState(false);
   const [timeout, setTimeout] = useState('');
+  const [updateIntervalEnabled, setUpdateIntervalEnabled] = useState(false);
+  const [updateInterval, setUpdateInterval] = useState('0');
   const [scriptPath, setScriptPath] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  }, []);
-
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const content = await file.text();
-      
-      // 解析模块内容
-      const nameMatch = content.match(/#!name=(.+)/);
-      const descMatch = content.match(/#!desc=(.+)/);
-      const scriptSection = content.match(/\[Script\]([\s\S]*?)(?=\[|$)/);
-
-      if (scriptSection) {
-        const scripts = scriptSection[1].trim().split('\n').filter(line => line.trim());
-        const parsedScripts: Script[] = scripts.map(script => {
-          const [name, ...paramParts] = script.split('=').map(s => s.trim());
-          const params = paramParts.join('='); // 重新组合可能包含 = 的部分
-
-          const paramMap = new Map();
-          // 使用正则表达式匹配键值对，考虑到值可能包含逗号
-          const matches = params.match(/(\w+(-\w+)*)=([^,]+)/g);
-          if (matches) {
-            matches.forEach(match => {
-              const [key, ...valueParts] = match.split('=');
-              const value = valueParts.join('='); // 重新组合可能包含 = 的值
-              paramMap.set(key.trim(), value.trim());
-            });
-          }
-
-          const type = paramMap.get('type') || '';
-          if (type.includes('http')) {
-            return {
-              name,
-              type,
-              pattern: (paramMap.get('pattern') || '').replace(/"/g, ''),
-              scriptPath: paramMap.get('script-path') || '',
-              mitmDomain: paramMap.get('requires-body') || '',
-              mitmMode: type.includes('response') ? 'response' : 'request'
-            };
-          } else {
-            return {
-              name,
-              type,
-              pattern: (paramMap.get('cronexp') || '').replace(/"/g, ''),
-              scriptPath: paramMap.get('script-path') || '',
-              timeout: paramMap.get('timeout')
-            };
-          }
-        });
-
-        setScripts(parsedScripts);
-        setModuleName(nameMatch?.[1] || '');
-        setModuleDesc(descMatch?.[1] || '');
-      }
-    } catch (error) {
-      console.error('Failed to parse module file:', error);
-      alert(t('parseError'));
-    }
-
-    // 清除文件输入，这样同一个文件可以重复选择
-    event.target.value = '';
-  };
+  useEffect(() => {
+    if (!initialContent) return;
+    const parsed = parseModuleContent(initialContent);
+    setModuleName(parsed.name);
+    setModuleAuthor(parsed.author || '');
+    setModuleDesc(parsed.desc);
+    setModuleIcon(parsed.icon || '');
+    setModuleCategory(parsed.category || '');
+    setScripts(parsed.scripts);
+  }, [initialContent]);
 
   const handleEdit = (index: number) => {
     const script = scripts[index];
@@ -109,154 +52,151 @@ export default function LocalEditor() {
     if (script.type.includes('http')) {
       setHttpPattern(script.pattern);
       setMitmDomain(script.mitmDomain || '');
-      setMitmMode(script.mitmMode || 'request');
+      setMitmMode(script.mitmMode || 'insert');
+      setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
+      setUpdateInterval(script.updateInterval || '0');
     } else {
       setCronPattern(script.pattern);
-      setTimeout(script.timeout || '6000');
+      setTimeout(script.timeout || '');
+      setWakeSystem(Boolean(script.wakeSystem));
+      setUpdateIntervalEnabled(Boolean(script.updateIntervalEnabled));
+      setUpdateInterval(script.updateInterval || '0');
     }
     setScriptPath(script.scriptPath);
     setEditingIndex(index);
   };
 
   const addScript = useCallback(() => {
-    const newScript: Script = {
+    const isHttp = scriptType.includes('http');
+    const newScript: ScriptItem = {
       name: scriptName,
       type: scriptType,
-      pattern: scriptType.includes('http') ? httpPattern : cronPattern,
+      pattern: isHttp ? httpPattern : cronPattern,
+      mitmDomain: isHttp ? mitmDomain : undefined,
+      mitmMode: isHttp ? mitmMode : undefined,
+      timeout: scriptType === 'cron' ? timeout : undefined,
+      wakeSystem: scriptType === 'cron' ? wakeSystem : undefined,
+      updateIntervalEnabled: updateIntervalEnabled,
+      updateInterval: updateInterval,
       scriptPath,
-      mitmDomain: scriptType.includes('http') ? mitmDomain : undefined,
-      mitmMode: scriptType.includes('http') ? mitmMode : undefined,
-      timeout: scriptType === 'cron' ? timeout : undefined
     };
 
     if (editingIndex !== null) {
-      // 编辑现有脚本
-      setScripts(prev => {
-        const newScripts = [...prev];
-        newScripts[editingIndex] = newScript;
-        return newScripts;
+      setScripts((prev) => {
+        const next = [...prev];
+        next[editingIndex] = newScript;
+        return next;
       });
       setEditingIndex(null);
     } else {
-      // 添加新脚本
-      setScripts(prev => [...prev, newScript]);
+      setScripts((prev) => [...prev, newScript]);
     }
 
     // 重置表单
     setScriptName('');
-    setScriptType('http-request');
     setHttpPattern('');
     setMitmDomain('');
-    setMitmMode('request');
+    setMitmMode('insert');
     setCronPattern('');
-    setTimeout('6000');
+    setWakeSystem(false);
+    setTimeout('');
+    setUpdateIntervalEnabled(false);
+    setUpdateInterval('0');
     setScriptPath('');
-  }, [scriptName, scriptType, httpPattern, cronPattern, scriptPath, mitmDomain, mitmMode, timeout, editingIndex]);
+  }, [
+    scriptName,
+    scriptType,
+    httpPattern,
+    mitmDomain,
+    mitmMode,
+    cronPattern,
+    wakeSystem,
+    timeout,
+    scriptPath,
+    editingIndex,
+    updateIntervalEnabled,
+    updateInterval,
+  ]);
 
   const deleteScript = useCallback((index: number) => {
     setScripts((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  const saveConfig = useCallback(() => {
+  const handleSave = async () => {
     try {
-      // 实现保存逻辑
-      alert('保存成功！');
+      // 生成模块内容
+      const moduleContent = buildModuleContent(moduleName, moduleDesc, scripts, {
+        author: moduleAuthor,
+        icon: moduleIcon,
+        category: moduleCategory,
+      });
+
+      if (gistId) {
+        // 更新现有的 Gist
+        await axios.put('/api/github/gist', {
+          gist_id: gistId,
+          filename: 'surge-module.sgmodule',
+          content: moduleContent,
+        });
+      } else {
+        // 创建新的 Gist
+        await axios.post('/api/github/gist', {
+          filename: 'surge-module.sgmodule',
+          content: moduleContent,
+          description: moduleDesc || 'Surge Module',
+        });
+      }
+
+      onSave();
     } catch (error) {
+      console.error('Failed to save gist:', error);
       alert(t('saveFailed'));
     }
-  }, [scripts, moduleName, moduleDesc, t]);
-
-  const handleImportClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  const generateConfig = useCallback(() => {
-    let config = `#!name=${moduleName}\n`;
-    config += `#!desc=${moduleDesc}\n\n`;
-    config += '[Script]\n';
-    
-    scripts.forEach(script => {
-      if (script.type.includes('http')) {
-        config += `${script.name} = type=${script.type},pattern=${script.pattern},requires-body=1,max-size=0,script-path=${script.scriptPath},script-update-interval=604800`;
-        if (script.mitmDomain) {
-          config += `,${script.mitmMode}-body=${script.mitmDomain}`;
-        }
-      } else {
-        // cron 类型
-        config += `${script.name} = type=cron,cronexp=${script.pattern},script-path=${script.scriptPath},script-update-interval=604800,timeout=6000`;
-      }
-      config += '\n';
-    });
-    
-    return config;
-  }, [moduleName, moduleDesc, scripts]);
-
-  const handleDownload = useCallback(() => {
-    const config = generateConfig();
-    const blob = new Blob([config], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${moduleName || 'surge-module'}.sgmodule`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, [generateConfig, moduleName]);
-
-  const handleCopyToClipboard = useCallback(() => {
-    const config = generateConfig();
-    navigator.clipboard.writeText(config)
-      .then(() => alert(t('copySuccess')))
-      .catch(() => alert(t('copyFailed')));
-  }, [generateConfig, t]);
-
-  useEffect(() => {
-    const handleImport = () => {
-      fileInputRef.current?.click();
-    };
-
-    window.addEventListener('triggerImport', handleImport);
-    return () => {
-      window.removeEventListener('triggerImport', handleImport);
-    };
-  }, []);
-
-  useEffect(() => {
-    const savedConfig = localStorage.getItem('config');
-    if (savedConfig) {
-      // 加载已保存的配置
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleSaveConfig = () => {
-      saveConfig();
-    };
-
-    window.addEventListener('save-config', handleSaveConfig);
-    return () => {
-      window.removeEventListener('save-config', handleSaveConfig);
-    };
-  }, [saveConfig]);
+  };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] pt-20">
-      {/* 导入模块的文件输入（隐藏） */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+      {/* 添加返回按钮和预览按钮 */}
+      <div className="container mx-auto px-8 pb-4 flex justify-between items-center">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <i className="ti ti-arrow-left"></i> {t('back')}
+        </button>
+        <button
+          onClick={() => setShowPreview(!showPreview)}
+          className="flex items-center gap-2 bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors"
+        >
+          <i className={`ti ti-${showPreview ? 'edit' : 'eye'}`}></i>
+          {showPreview ? t('editMode') : t('preview')}
+        </button>
+      </div>
 
-      {/* 拖放区域（覆盖整个页面） */}
-      <div
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        className="min-h-full"
-      >
-        {/* 主内容区域 */}
+      {showPreview ? (
+        <div className="container mx-auto p-8">
+          <div className="bg-white/70 backdrop-blur-sm shadow-lg rounded-lg p-8">
+            <h2 className="text-2xl font-semibold mb-8 flex items-center gap-2 text-gray-800">
+              <i className="ti ti-file-text"></i> {t('preview')}
+            </h2>
+            <pre className="bg-gray-100 p-6 rounded-lg overflow-x-auto font-mono text-sm whitespace-pre-wrap">
+              {buildModuleContent(moduleName, moduleDesc, scripts, {
+                author: moduleAuthor,
+                icon: moduleIcon,
+                category: moduleCategory,
+              })}
+            </pre>
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={handleSave}
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-all text-lg font-semibold flex items-center gap-2"
+              >
+                <i className="ti ti-device-floppy"></i> {t('saveButton')}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
         <div className="container mx-auto p-8">
           <div className="grid grid-cols-12 gap-8">
             {/* 左侧：预添加脚本区 */}
@@ -332,6 +272,29 @@ export default function LocalEditor() {
                           <option value="append">{t('mitmAppend')}</option>
                         </select>
                       </div>
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={updateIntervalEnabled}
+                          onChange={(e) => setUpdateIntervalEnabled(e.target.checked)}
+                          className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <label className="ml-3 text-lg text-gray-700">
+                          {t('updateIntervalEnable')}
+                        </label>
+                      </div>
+                      <div>
+                        <label className="block text-lg font-medium text-gray-700 mb-3">
+                          {t('updateInterval')}
+                        </label>
+                        <input
+                          type="number"
+                          value={updateInterval}
+                          onChange={(e) => setUpdateInterval(e.target.value)}
+                          disabled={!updateIntervalEnabled}
+                          className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
+                        />
+                      </div>
                     </>
                   )}
 
@@ -370,6 +333,29 @@ export default function LocalEditor() {
                             value={timeout}
                             onChange={(e) => setTimeout(e.target.value)}
                             className="w-48 px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={updateIntervalEnabled}
+                            onChange={(e) => setUpdateIntervalEnabled(e.target.checked)}
+                            className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <label className="ml-3 text-lg text-gray-700">
+                            {t('updateIntervalEnable')}
+                          </label>
+                        </div>
+                        <div>
+                          <label className="block text-lg font-medium text-gray-700 mb-3">
+                            {t('updateInterval')}
+                          </label>
+                          <input
+                            type="number"
+                            value={updateInterval}
+                            onChange={(e) => setUpdateInterval(e.target.value)}
+                            disabled={!updateIntervalEnabled}
+                            className="w-48 px-4 py-3 text-lg rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
                           />
                         </div>
                       </div>
@@ -487,6 +473,18 @@ export default function LocalEditor() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('moduleAuthor')}
+                      </label>
+                      <input
+                        type="text"
+                        value={moduleAuthor}
+                        onChange={(e) => setModuleAuthor(e.target.value)}
+                        placeholder={t('moduleAuthorPlaceholder')}
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         {t('moduleDesc')}
                       </label>
                       <textarea
@@ -496,24 +494,36 @@ export default function LocalEditor() {
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
-                    <div className="flex gap-2 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('moduleIcon')}
+                      </label>
+                      <input
+                        type="text"
+                        value={moduleIcon}
+                        onChange={(e) => setModuleIcon(e.target.value)}
+                        placeholder={t('moduleIconPlaceholder')}
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t('moduleCategory')}
+                      </label>
+                      <input
+                        type="text"
+                        value={moduleCategory}
+                        onChange={(e) => setModuleCategory(e.target.value)}
+                        placeholder={t('moduleCategoryPlaceholder')}
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                    <div className="pt-4">
                       <button
-                        onClick={saveConfig}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        onClick={handleSave}
+                        className="w-full bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-3 rounded-lg transition-all text-lg font-semibold flex items-center justify-center gap-2"
                       >
-                        {t('saveButton')}
-                      </button>
-                      <button
-                        onClick={handleDownload}
-                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                      >
-                        {t('download')}
-                      </button>
-                      <button
-                        onClick={handleCopyToClipboard}
-                        className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
-                      >
-                        {t('copyToClipboard')}
+                        <i className="ti ti-device-floppy"></i> {t('saveButton')}
                       </button>
                     </div>
                   </div>
@@ -522,7 +532,7 @@ export default function LocalEditor() {
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
