@@ -74,8 +74,41 @@ export function parseModuleContent(content: string): ParsedModule {
   const iconMatch = content.match(ICON_RE);
   const categoryMatch = content.match(CATEGORY_RE);
   const scriptSectionMatch = content.match(/\[Script\]([\s\S]*?)(?=\n\[|$)/i);
+  const mitmSectionMatch = content.match(/\[MITM\]([\s\S]*?)(?=\n\[|$)/i);
 
   const scripts: ScriptItem[] = [];
+  const mitmEntries: Array<{ mode: 'insert' | 'append'; domain: string }> = [];
+
+  if (mitmSectionMatch) {
+    const mitmLines = mitmSectionMatch[1]
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0 && !line.startsWith('#') && !line.startsWith(';'));
+    const hostnameLine = mitmLines.find((line) => line.toLowerCase().startsWith('hostname'));
+    if (hostnameLine) {
+      const eqIndex = hostnameLine.indexOf('=');
+      if (eqIndex !== -1) {
+        const rawValue = hostnameLine.slice(eqIndex + 1).trim();
+        const parts = rawValue.split(',').map((part) => part.trim()).filter(Boolean);
+        for (const part of parts) {
+          if (part.startsWith('%APPEND%')) {
+            const domain = part.replace('%APPEND%', '').trim();
+            if (domain) mitmEntries.push({ mode: 'append', domain });
+            continue;
+          }
+          if (part.startsWith('%INSERT%')) {
+            const domain = part.replace('%INSERT%', '').trim();
+            if (domain) mitmEntries.push({ mode: 'insert', domain });
+            continue;
+          }
+          if (part) {
+            mitmEntries.push({ mode: 'append', domain: part });
+          }
+        }
+      }
+    }
+  }
+
   if (scriptSectionMatch) {
     const lines = scriptSectionMatch[1]
       .split('\n')
@@ -132,7 +165,14 @@ export function parseModuleContent(content: string): ParsedModule {
     desc: descMatch?.[1]?.trim() || '',
     icon: iconMatch?.[1]?.trim() || '',
     category: categoryMatch?.[1]?.trim() || '',
-    scripts,
+    scripts: (() => {
+      const httpScripts = scripts.filter((item) => item.type.includes('http'));
+      if (mitmEntries.length === 1 && httpScripts.length === 1 && !httpScripts[0].mitmDomain) {
+        httpScripts[0].mitmDomain = mitmEntries[0].domain;
+        httpScripts[0].mitmMode = mitmEntries[0].mode;
+      }
+      return scripts;
+    })(),
   };
 }
 
@@ -143,6 +183,8 @@ export function buildModuleContent(
   meta?: { author?: string; icon?: string; category?: string }
 ): string {
   const mitmSeen = new Set<string>();
+  const mitmAppend: string[] = [];
+  const mitmInsert: string[] = [];
   let content = `#!name=${name || 'Untitled Module'}\n`;
   if (meta?.author) content += `#!author=${meta.author}\n`;
   content += `#!desc=${desc || ''}\n`;
@@ -164,7 +206,11 @@ export function buildModuleContent(
         if (script.mitmDomain && script.mitmMode) {
           const key = `${script.mitmMode}:${script.mitmDomain}`;
           if (!mitmSeen.has(key)) {
-            content += `,${script.mitmMode}-body=${script.mitmDomain}`;
+            if (script.mitmMode === 'append') {
+              mitmAppend.push(script.mitmDomain);
+            } else {
+              mitmInsert.push(script.mitmDomain);
+            }
             mitmSeen.add(key);
           }
         }
@@ -184,6 +230,18 @@ export function buildModuleContent(
       }
       content += '\n';
     }
+  }
+
+  if (mitmAppend.length || mitmInsert.length) {
+    content += '\n[MITM]\n';
+    const hostnameParts: string[] = [];
+    for (const domain of mitmInsert) {
+      hostnameParts.push(`%INSERT% ${domain}`);
+    }
+    for (const domain of mitmAppend) {
+      hostnameParts.push(`%APPEND% ${domain}`);
+    }
+    content += `hostname = ${hostnameParts.join(', ')}\n`;
   }
 
   return content;
