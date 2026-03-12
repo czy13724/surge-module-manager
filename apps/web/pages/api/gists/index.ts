@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
 import { Octokit } from '@octokit/rest';
+import { getAccessToken } from '../../../utils/auth';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getSession({ req });
+  const accessToken = await getAccessToken(req, res);
 
-  if (!session?.accessToken) {
+  if (!accessToken) {
     return res.status(401).json({ message: '未授权' });
   }
 
   const octokit = new Octokit({
-    auth: session.accessToken,
+    auth: accessToken,
   });
 
   if (req.method === 'POST') {

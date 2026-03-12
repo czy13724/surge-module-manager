@@ -13,10 +13,13 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  session: {
+    strategy: 'jwt'
+  },
   callbacks: {
     async jwt({ token, account }) {
       // 保存访问令牌到 JWT
-      if (account) {
+      if (account?.access_token) {
         token.accessToken = account.access_token;
       }
       return token;
